@@ -23,16 +23,13 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               <router-link class="dropdown-item" to="/paciente">Cadastar Paciente</router-link>
               <router-link class="dropdown-item" to="/listarPacinte">Listar Paciente</router-link>
-              <a class="dropdown-item" href="#">Atribuir Permissão</a>
-              <a class="dropdown-item" href="#">Listar Utilizadores</a>
-              <a class="dropdown-item" href="#">Registar Notificação</a>
             </div>
           </li>
         </ul>
       </div>
     </nav>
 
-    <router-view class="container" id="tamanhoContainer" style="margin-top: 50px" />
+    <router-view class="container" id="tamanhoContainer" style="margin-top: 30px" />
     
   </div>
 </template>

@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import PacienteView from '../views/PacienteView.vue'
 import listarPacinte from '../views/ListarPacienteView.vue'
+import editar_paciente from '../views/EditarPacienteView.vue'
 
 Vue.use(VueRouter)
 
@@ -16,6 +17,25 @@ const routes = [
     path: '/listarPacinte',
     name: 'listarPacinte',
     component: listarPacinte
+
+  },
+  {
+    path: '/editar_paciente:bi',
+    name: 'editar_paciente',
+    component: editar_paciente,
+    beforeEnter: (to, from, next) => {
+      to.params.bi ? next() : next({
+        name: "listarPacinte" // back to safety route //
+      });
+      /*
+      if (to.params.bi) {
+        next()
+      } else {
+        next({
+          name: "listarPacinte" // back to safety route //
+        });
+      }*/
+    }
 
   },
   {
