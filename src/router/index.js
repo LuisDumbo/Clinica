@@ -1,9 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import PacienteView from '../views/PacienteView.vue'
-import listarPacinte from '../views/ListarPacienteView.vue'
-import editar_paciente from '../views/EditarPacienteView.vue'
+import PacienteView from '../views/pacientePaginas/PacienteView.vue'
+import listarPacinte from '../views/pacientePaginas/ListarPacienteView.vue'
+import editar_paciente from '../views/pacientePaginas/EditarPacienteView.vue'
+import historico_pacinte  from '../views/pacientePaginas/PacienteInfoView.vue'
+
+import medico from '../views/medicoPaginas/CadastrarMedicoView.vue'
+import listar_medico from '../views/medicoPaginas/ListarMedicoView.vue'
+import medico_editar from '../views/medicoPaginas/EditarMedicoView.vue'
+import info_medico  from '../views/medicoPaginas/InfoMedicoView.vue'
 
 Vue.use(VueRouter)
 
@@ -17,6 +23,12 @@ const routes = [
     path: '/listarPacinte',
     name: 'listarPacinte',
     component: listarPacinte
+
+  },
+  {
+    path: '/historico_pacinte:bi',
+    name: 'historico_pacinte',
+    component: historico_pacinte
 
   },
   {
@@ -42,6 +54,31 @@ const routes = [
     path: '/paciente',
     name: 'paciente',
     component: PacienteView
+
+  }
+  ,
+  {
+    path: '/medico',
+    name: 'medico',
+    component: medico
+
+  },
+  {
+    path: '/listar_medico',
+    name: 'listar_medico',
+    component: listar_medico
+
+  },
+  {
+    path: '/medico_editar:numero_ordem',
+    name: 'medico_editar',
+    component: medico_editar
+
+  },
+  {
+    path: '/info_medico:numero_ordem',
+    name: 'info_medico',
+    component: info_medico
 
   },
   {

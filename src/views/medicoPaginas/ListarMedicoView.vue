@@ -1,9 +1,9 @@
 <template>
-    <div class="listarPacinte">
+    <div class="listar_medico">
 
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h4 class="m-0 font-weight-bold text-dark text-center">Listar Paciente</h4>
+                <h4 class="m-0 font-weight-bold text-dark text-center">Listar Medico</h4>
 
 
             </div>
@@ -22,10 +22,8 @@
 
                     <template  slot="table-row" slot-scope="props">
                         <span class="d-flex flex-row" v-if="props.column.field == 'actions'">
-                            <router-link class="btn btn-primary btn-sm w-25 " to="/paciente">Info</router-link> <!--{{props.row.bi}} -->
-                            <router-link class="btn bg-success btn-sm" to="/paciente">Constula</router-link> 
-                            <router-link class="btn bg-info btn-sm" to="/paciente">Exame </router-link> 
-                            <router-link class="btn bg-warning btn-sm" :to="{ name: 'editar_paciente', params: { bi: props.row.bi } }">Edit </router-link> 
+                            <router-link class="btn btn-primary btn-sm w-25 " :to="{ name: 'info_medico', params: { numero_rodem: props.row.numero_rodem  } }">Info</router-link> <!--{{props.row.bi}} -->
+                            <router-link class="btn bg-warning btn-sm" :to="{ name: 'medico_editar', params: { numero_rodem: props.row.numero_rodem } }">Edit </router-link> 
                         </span>
                     </template>
 
@@ -54,18 +52,13 @@ export default {
                     field: 'name',
                 },
                 {
-                    label: 'Data',
-                    field: 'date',
+                    label: 'Numero Ordem',
+                    field: 'numero_rodem',
                 }
                 ,
                 {
-                    label: 'BI',
-                    field: 'bi',
-                }
-                ,
-                {
-                    label: 'Sexo',
-                    field: 'sexo',
+                    label: 'Especialidade',
+                    field: 'especialidade',
                 }
                 ,
                 {
@@ -89,27 +82,24 @@ export default {
 
             const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
 
-            axios.get('http://localhost/historico_mais/api/listar_paciente', {
+            axios.get('http://localhost/historico_mais/api/listar_medico', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             })
                 .then((res) => {
-                    console.log(res.data)
+                   // console.log(res.data)
                     this.lista = res.data.data;
 
                     this.lista.forEach(element => {
-                        console.log(element.nome)
-                        this.rows.push({ name: "" + element.nome + "", date: "" + element.Data ? element.Data : "" + "", bi: "" + element.BI ? element.BI : "" + "", sexo: "" + element.sexo ? element.sexo : "" + "", actions: '' }) //<input type="submit" value="">
+                        //console.log(element.nome)
+                        this.rows.push({ name: "" + element.nome + "", numero_rodem: "" + element.numero_rodem ? element.numero_rodem : "" + "", especialidade: "" + element.especialidade ? element.especialidade : "" + "", actions: '' }) //<input type="submit" value="">
                     });
                 })
                 .catch((error) => {
                     console.error(error)
                 })
 
-        }, escolher(params) {
-            console.log("Nome : " + params.row.name);
-            // this.id = params.row.id;
         }
     }
 }

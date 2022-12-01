@@ -25,12 +25,22 @@
               <router-link class="dropdown-item" to="/listarPacinte">Listar Paciente</router-link>
             </div>
           </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Medico
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <router-link class="dropdown-item" to="/medico">Cadastar Medico</router-link>
+              <router-link class="dropdown-item" to="/listar_medico">Listar Medico</router-link>
+            </div>
+          </li>
         </ul>
       </div>
     </nav>
 
     <router-view class="container" id="tamanhoContainer" style="margin-top: 30px" />
-    
+
   </div>
 </template>
 
@@ -43,5 +53,22 @@ nav li.router-link-exact-active {
 
 .menucolor {
   background: #00a8e1 !important;
+}
+
+
+.spinner {
+  margin: auto;
+  margin-top: 50px;
+  width: 11.2px;
+  height: 11.2px;
+  animation: spinner-z355kx 1s infinite linear;
+  border-radius: 11.2px;
+  box-shadow: 28px 0px 0 0 #474bff, 17.4px 21.8px 0 0 #474bff, -6.2px 27.2px 0 0 #474bff, -25.2px 12px 0 0 #474bff, -25.2px -12px 0 0 #474bff, -6.2px -27.2px 0 0 #474bff, 17.4px -21.8px 0 0 #474bff;
+}
+
+@keyframes spinner-z355kx {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
