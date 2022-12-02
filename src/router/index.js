@@ -11,6 +11,8 @@ import listar_medico from '../views/medicoPaginas/ListarMedicoView.vue'
 import medico_editar from '../views/medicoPaginas/EditarMedicoView.vue'
 import info_medico  from '../views/medicoPaginas/InfoMedicoView.vue'
 
+import consulta from '../views/consutlaPaginas/CdastrarConsultaView.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -89,6 +91,14 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
   }
+  ,
+  /// paginas de consulta 
+  {
+    path: '/consulta:bi',
+    name: 'consulta',
+    component: consulta
+
+  },
 ]
 
 const router = new VueRouter({

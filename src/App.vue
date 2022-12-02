@@ -21,6 +21,7 @@
               Paceinte
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              
               <router-link class="dropdown-item" to="/paciente">Cadastar Paciente</router-link>
               <router-link class="dropdown-item" to="/listarPacinte">Listar Paciente</router-link>
             </div>
