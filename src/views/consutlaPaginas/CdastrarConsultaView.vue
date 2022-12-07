@@ -28,9 +28,9 @@
                 <div class="row">
                     <div class=" form-group col-6">
 
-                        <select class="form-control" v-model="selected">
+                        <select class="form-control" v-model="medico" required="requiored">
                             <option disabled>Medico</option>
-                            <option v-for="option in options" :key="option" :value="option.value">
+                            <option v-for="option in options" :key="option.id" :value="option.value">
                                 {{ option.text }}
                             </option>
                         </select>
@@ -55,22 +55,22 @@
 
                         <div class="form-group col-6">
                             <label for="nome">Temperatua</label>
-                            <input type="text" v-model="nome" name="nome" value="" id="nome" required minlength="5"
-                                disabled class="form-control" />
+                            <input type="text" v-model="temperatura" name="temperatura" value="" id="nome" required
+                                minlength="5" disabled class="form-control" />
 
                         </div>
 
                         <div class="form-group col-6">
                             <label>Peso</label>
-                            <input type="text" class="form-control" v-model="doc_identificacao" name="doc_identificacao"
-                                disabled placeholder="Insira o Documento da Identificação" autocomplete="off"
+                            <input type="text" class="form-control" v-model="peso" name="peso" disabled
+                                placeholder="Insira o Documento da Identificação" autocomplete="off"
                                 required="requiored">
 
                         </div>
 
                         <div class="form-group col-6">
                             <label>Preção Arterial</label>
-                            <input type="text" class="form-control" v-model="doc_identificacao" name="doc_identificacao"
+                            <input type="text" class="form-control" v-model="presao_arterial" name="presao_arterial"
                                 disabled placeholder="Insira o Documento da Identificação" autocomplete="off"
                                 required="requiored">
 
@@ -92,20 +92,20 @@
                     </div>
                     <div class="form-group col-6">
                         <label>Local</label>
-                        <input type="text" class="form-control" v-model="doc_identificacao" name="doc_identificacao"
+                        <input type="text" class="form-control" v-model="local_consulta" name="local_consulta"
                             placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
                     </div>
 
                 </div>
                 <div class="form-group ">
                     <label for="exampleFormControlTextarea1">Descrição Sintomas </label>
-                    <textarea class="form-control" name="descricao" required id="exampleFormControlTextarea1"
-                        rows="3"></textarea>
+                    <textarea class="form-control" name="descricao_sintoma" v-model="descricao_sintoma" required
+                        id="exampleFormControlTextarea1" rows="3"></textarea>
                 </div>
 
                 <div class="form-group ">
                     <label>Diagnóstico</label>
-                    <input type="text" class="form-control" v-model="doc_identificacao" name="doc_identificacao"
+                    <input type="text" class="form-control" v-model="diagnostico" name="diagnostico"
                         placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
                 </div>
 
@@ -113,56 +113,61 @@
 
                 <div class=" form-group col-6">
 
-                    <input type="checkbox" id="checkbox_exame" v-model="exame_confirm" />
+                    <input type="checkbox" id="checkbox_exame" v-model="exame_confirm" @input="zerarTudo"  />
                     <label for="checkbox_exame">Exames</label>
                 </div>
 
                 <div v-if="exame_confirm">
 
-                    <table id="example" class=" table table-bordered " cellspacing="0" width="100%">
-                        <thead>
-                            <tr>
-                                <th>Exame</th>
-                                <th>Resultado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div class=" form-group col-6">
 
-                            <tr>
-                                <td>
-                                    <input type="text" step="any" class="form-control" name="exame[]"
-                                        placeholder="Exame" autocomplete="off" required="requiored">
-                                </td>
-                                <td>
-                                    <input type="file" ref="file" step="any" class="form-control" name="solucao[]"
-                                        @change="onFile" placeholder="Resultado" autocomplete="off"
-                                        required="requiored">
-                                </td>
+                        <input type="number" id="numero_exame" v-model.number="numero_exame" @input="zerar" />
+                    </div>
+                    <div>
 
-                            </tr>
-                        </tbody>
-                    </table>
+                        <table id="example" class=" table table-bordered " cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Nª</th>
+                                    <th>Exame</th>
+                                    <th>Resultado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="animate__animated animate__fadeIn " v-for=" um_exame in numero_exame"
+                                    :key="um_exame.id">
+                                    <td>
+                                        {{ um_exame }}
+                                    </td>
+                                    <td>
+                                        <input type="text" step="any" class="form-control" name="exame[]"
+                                            v-model="exame[um_exame - 1]" placeholder="Exame" autocomplete="off"
+                                            required="requiored">
+                                    </td>
+                                    <td>
+                                        <input type="file" ref="file" step="any" class="form-control" name="solucao[]"
+                                            @change="onFile" placeholder="Resultado" autocomplete="off"
+                                            required="requiored">
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
                 </div>
 
 
 
                 <div class="row" id="linha-horizontal"> </div>
 
-                <img :src="imgSrc" v-if="imgSrc" />
-
-
-                <div class="form-group">
-                    <label>BI</label>
-                    <input type="text" class="form-control" v-model="doc_identificacao" name="doc_identificacao"
-                        placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
+                <div class="form-group ">
+                    <label for="exampleFormControlTextarea1">Receita </label>
+                    <textarea class="form-control" v-model="receita" name="receita" required
+                        id="exampleFormControlTextarea1" rows="3"></textarea>
                 </div>
-
-                <div class="form-group">
-                    <label>Numero</label>
-                    <input type="text" class="form-control" v-model="numero" name="numero"
-                        placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
-                </div>
-
 
                 <div style="text-align: right" class="d-flex flex-row">
                     <button type="submit" name="utibtn" class="btn btn-success btn-small">Registar</button>
@@ -173,13 +178,27 @@
 
         <div v-else class="spinner "> </div>
 
-        <select v-model="selected">
+        <!--
+
+       
+
+        <select v-model="medico">
             <option v-for="option in options" :key="option" :value="option.value">
                 {{ option.text }}
             </option>
         </select>
 
-        <div>Selected: {{ selected }}</div>
+        <div>medico: {{ medico }}</div>
+        <div>Exame: {{ exame }}</div>
+
+
+        <input type="file" @change="onFile" />
+        <img :src="imgSrc" v-if="imgSrc" />
+        <img :src="imgSrc" v-if="imgSrc" />
+
+    -->
+
+
 
 
     </div>
@@ -195,22 +214,44 @@ export default {
     data() {
         return {
 
+            numero_exame: 1,
+            
             imgSrc: '',
-            imagem: '',
+           
+            imagem: [],
+            mostrar: '',
 
             triagem: null,
             exame_confirm: null,
 
-            selected: 'Medico',
+            medico: 'Medico',
             options: [],
-            exame: null,
+
             marcial: null,
             lista: false,
             paciente: [],
 
             nome: null,
-            date: null,
+
             doc_identificacao: null,
+
+
+            //dadso da triagem//
+            temperatura: null,
+            peso: null,
+            presao_arterial: null,
+            //dadso da consulta 
+            date: null,
+            local_consulta: null,
+            descricao_sintoma: null,
+            diagnostico: null,
+            /// dados exame
+            exame: [],
+            lista_de_exame:[],
+            lista_exame: [],
+            receita: null,
+
+
             sexo: null,
             numero: null
 
@@ -222,8 +263,17 @@ export default {
         this.medicos();
     },
     methods: {
+        zerar() {
+            this.imagem.length = 0
+            this.exame.length = 0
+        },
+        zerarTudo() {
+            this.imagem.length = 0
+            this.exame.length = 0
+            this.numero_exame= 1
+        },
         redirecionar() {
-            // this.$route.params.bi ? "" : this.$router.push({path: '/listarPacinte'})
+          
             if (this.$route.params.bi === 'undefined') {
                 this.$router.push({ path: '/listarPacinte' })
             }
@@ -232,7 +282,7 @@ export default {
             const files = e.target.files
             if (!files.length) return
 
-            this.imagem = this.$refs.file.files[0];
+            this.imagem.push(files[0]);
 
             const reader = new FileReader()
             reader.readAsDataURL(files[0])
@@ -240,26 +290,53 @@ export default {
         },
 
         file() {
-            let formData = new FormData();
-            formData.append('sendimage', this.imagem);
 
-            const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
+            var i = 0 ;
+            this.imagem.forEach(element => {
+               /// console.log(element)
+                let formData = new FormData();
+                formData.append('sendimage', element);
 
-            axios.post('http://localhost/historico_mais/api/arquivo', formData, {
-                headers: {
+                const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
 
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-                .then((res) => {
-                    // this.$router.push({ path: '/listarPacinte' });
-                    console.log(res.data)
-                    //()  this.lista = res.data.data;
+                axios.post('http://localhost/historico_mais/api/arquivo', formData, {
+                    headers: {
 
+                        'Authorization': `Bearer ${token}`
+                    }
                 })
-                .catch((error) => {
-                    console.error(error)
-                })
+                    .then((res) => {
+                        // this.$router.push({ path: '/listarPacinte' });
+                      //  console.log(res.data.message)
+                        this.mostrar = res.data.message
+                        //()  this.lista = res.data.data;
+                        this.lista_exame = {
+                            nome : this.exame[i],
+                            url: res.data.message
+                        }
+
+                        this.lista_de_exame.push(this.lista_exame )
+
+                        console.log(this.lista_exame)
+
+                        console.log(i)
+                        i++
+
+                       // console.log(this.exame[this.i])
+
+                    })
+                    .catch((error) => {
+                        console.error(error)
+                    })
+
+                   
+
+                   
+                  
+            });
+
+            console.log(this.lista_de_exame)
+           
 
         },
 
@@ -295,7 +372,7 @@ export default {
             })
                 .then((res) => {
                     this.$router.push({ path: '/listarPacinte' });
-                    console.log(res.data)
+                   console.log(res.data)
                     //()  this.lista = res.data.data;
 
                 })
@@ -318,20 +395,17 @@ export default {
                 }, params: {
                     BI: this.$route.params.bi
                 }
-            })
-                .then((res) => {
-                    console.log(res.data.data[0])
-                    console.log(this.$route.params.bi)
+            }).then((res) => {
+                   // console.log(res.data.data[0])
+                  //  console.log(this.$route.params.bi)
                     this.lista = res.data.data[0];
 
-                    console.log(res.data.data[0].nome)
+                    //console.log(res.data.data[0].nome)
                     this.nome = res.data.data[0].nome ? res.data.data[0].nome : ""
                     this.date = res.data.data[0].Data ? res.data.data[0].Data : ""
                     this.doc_identificacao = res.data.data[0].BI ? res.data.data[0].BI : ""
                     this.sexo = res.data.data[0].sexo ? res.data.data[0].sexo : ""
                     this.numero = res.data.data[0].numero ? res.data.data[0].numero : ""
-
-
 
                 })
                 .catch((error) => {
