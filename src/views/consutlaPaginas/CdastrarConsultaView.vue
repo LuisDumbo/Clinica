@@ -7,7 +7,7 @@
         </div>
 
         <div v-if="lista">
-            <form ref="paciente" @submit.prevent="file" autocomplete="off" class="form">
+            <form ref="paciente" @submit.prevent="user" autocomplete="off" class="form">
                 <div class="row">
                     <div class="form-group col-6">
                         <label for="nome">Nome Completo</label>
@@ -113,7 +113,7 @@
 
                 <div class=" form-group col-6">
 
-                    <input type="checkbox" id="checkbox_exame" v-model="exame_confirm" @input="zerarTudo"  />
+                    <input type="checkbox" id="checkbox_exame" v-model="exame_confirm" @input="zerarTudo" />
                     <label for="checkbox_exame">Exames</label>
                 </div>
 
@@ -198,6 +198,7 @@
 
     -->
 
+        <div>medico: {{ medico }}</div>
 
 
 
@@ -215,9 +216,9 @@ export default {
         return {
 
             numero_exame: 1,
-            
+
             imgSrc: '',
-           
+
             imagem: [],
             mostrar: '',
 
@@ -247,8 +248,8 @@ export default {
             diagnostico: null,
             /// dados exame
             exame: [],
-            lista_de_exame:[],
-            lista_exame: [],
+            lista_de_exame: {},
+            lista_exame: {},
             receita: null,
 
 
@@ -263,17 +264,9 @@ export default {
         this.medicos();
     },
     methods: {
-        zerar() {
-            this.imagem.length = 0
-            this.exame.length = 0
-        },
-        zerarTudo() {
-            this.imagem.length = 0
-            this.exame.length = 0
-            this.numero_exame= 1
-        },
+
         redirecionar() {
-          
+
             if (this.$route.params.bi === 'undefined') {
                 this.$router.push({ path: '/listarPacinte' })
             }
@@ -291,9 +284,9 @@ export default {
 
         file() {
 
-            var i = 0 ;
+            var i = 0;
             this.imagem.forEach(element => {
-               /// console.log(element)
+                /// console.log(element)
                 let formData = new FormData();
                 formData.append('sendimage', element);
 
@@ -307,72 +300,111 @@ export default {
                 })
                     .then((res) => {
                         // this.$router.push({ path: '/listarPacinte' });
-                      //  console.log(res.data.message)
+                        //  console.log(res.data.message)
                         this.mostrar = res.data.message
                         //()  this.lista = res.data.data;
                         this.lista_exame = {
-                            nome : this.exame[i],
+                            nome: this.exame[i],
                             url: res.data.message
                         }
 
-                        this.lista_de_exame.push(this.lista_exame )
+                        Object.assign(this.lista_de_exame,this.lista_exame);
+                       // this.lista_de_exame.push(this.lista_exame)
 
                         console.log(this.lista_exame)
 
                         console.log(i)
                         i++
 
-                       // console.log(this.exame[this.i])
+                        // console.log(this.exame[this.i])
 
                     })
                     .catch((error) => {
                         console.error(error)
                     })
 
-                   
 
-                   
-                  
+
+
+
             });
 
-            console.log(this.lista_de_exame)
-           
+           // console.log(this.lista_de_exame)
+            // this.zerarTudo()
+
 
         },
 
         user: function (event) {
 
-            const dados = {
-
+            let dados = {
                 BI: this.doc_identificacao,
+                numero_ordem: this.medico,
+
                 dados: {
-                    nome: this.nome,
-                    Data: this.date,
-                    BI: this.doc_identificacao,
-                    sexo: this.sexo,
-                    numero: this.numero
+                    data_consulta: this.date,
+                    local_consulta: this.local_consulta,
+                    descricao_sintomas: this.descricao_sintoma,
+                    diagnostico: this.diagnostico,
+                    receita: this.receita
+
                 }
 
             }
-            this.lista = false
 
-            this.nome = ''
+            if (this.exame_confirm) {
+
+                this.file()
+
+               
+               // Object.assign(dados.dados, { exame: this.lista_de_exame });
+
+
+               
+                dados = {
+                    BI: this.doc_identificacao,
+                    numero_ordem: this.medico,
+
+                    dados: {
+                        data_consulta: this.date,
+                        local_consulta: this.local_consulta,
+                        descricao_sintomas: this.descricao_sintoma,
+                        diagnostico: this.diagnostico,
+                        receita: this.receita,
+                        exame: this.lista_de_exame
+
+                    }
+
+                } 
+                console.log(this.lista_de_exame)
+
+                this.exame_confirm = null
+            }
+
+
+            //  this.doc_identificacao = ''
+            this.local_consulta = ''
+            this.medico = 'Medico'
             this.date = ''
-            this.doc_identificacao = ''
-            this.sexo = ''
-            this.numero = ''
+            this.descricao_sintoma = ''
+            this.diagnostico = ''
+            this.receita = ''
+
+            console.log(dados)
+            this.lista = false
 
             const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
 
-            axios.post('http://localhost/historico_mais/api/editar_paciente', dados, {
+            axios.post('http://localhost/historico_mais/api/registar_consulta', dados, {
                 headers: {
 
                     'Authorization': `Bearer ${token}`
                 }
             })
                 .then((res) => {
-                    this.$router.push({ path: '/listarPacinte' });
-                   console.log(res.data)
+                   // this.$router.push({ path: '/listarPacinte' });
+                    console.log(res.data)
+                    this.listar()
                     //()  this.lista = res.data.data;
 
                 })
@@ -380,12 +412,60 @@ export default {
                     console.error(error)
                 })
 
+            /*
+   
+               const dados = {
+   
+                   BI: this.doc_identificacao,
+                   dados: {
+                       nome: this.nome,
+                       Data: this.date,
+                       BI: this.doc_identificacao,
+                       sexo: this.sexo,
+                       numero: this.numero
+                   }
+   
+               }
+               this.lista = false
+   
+               this.nome = ''
+               this.date = ''
+               this.doc_identificacao = ''
+               this.sexo = ''
+               this.numero = ''
+   
+               const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
+   
+               axios.post('http://localhost/historico_mais/api/editar_paciente', dados, {
+                   headers: {
+   
+                       'Authorization': `Bearer ${token}`
+                   }
+               })
+                   .then((res) => {
+                       this.$router.push({ path: '/listarPacinte' });
+                      console.log(res.data)
+                       //()  this.lista = res.data.data;
+   
+                   })
+                   .catch((error) => {
+                       console.error(error)
+                   })
+   */
 
             event.target.reset();
-
-
+        },
+        zerar() {
+            this.imagem.length = 0
+            this.exame.length = 0
+        },
+        zerarTudo() {
+            this.zerar()
+            this.numero_exame = 1
         },
         listar() {
+
+           
 
             const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
 
@@ -396,18 +476,18 @@ export default {
                     BI: this.$route.params.bi
                 }
             }).then((res) => {
-                   // console.log(res.data.data[0])
-                  //  console.log(this.$route.params.bi)
-                    this.lista = res.data.data[0];
+                // console.log(res.data.data[0])
+                //  console.log(this.$route.params.bi)
+                this.lista = res.data.data[0];
 
-                    //console.log(res.data.data[0].nome)
-                    this.nome = res.data.data[0].nome ? res.data.data[0].nome : ""
-                    this.date = res.data.data[0].Data ? res.data.data[0].Data : ""
-                    this.doc_identificacao = res.data.data[0].BI ? res.data.data[0].BI : ""
-                    this.sexo = res.data.data[0].sexo ? res.data.data[0].sexo : ""
-                    this.numero = res.data.data[0].numero ? res.data.data[0].numero : ""
+                //console.log(res.data.data[0].nome)
+                this.nome = res.data.data[0].nome ? res.data.data[0].nome : ""
+                //  this.date = res.data.data[0].Data ? res.data.data[0].Data : ""
+                this.doc_identificacao = res.data.data[0].BI ? res.data.data[0].BI : ""
+                this.sexo = res.data.data[0].sexo ? res.data.data[0].sexo : ""
+                this.numero = res.data.data[0].numero ? res.data.data[0].numero : ""
 
-                })
+            })
                 .catch((error) => {
                     console.error(error)
                 })
