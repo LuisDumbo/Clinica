@@ -4,14 +4,16 @@ import HomeView from '../views/HomeView.vue'
 import PacienteView from '../views/pacientePaginas/PacienteView.vue'
 import listarPacinte from '../views/pacientePaginas/ListarPacienteView.vue'
 import editar_paciente from '../views/pacientePaginas/EditarPacienteView.vue'
-import historico_pacinte  from '../views/pacientePaginas/PacienteInfoView.vue'
+import historico_pacinte from '../views/pacientePaginas/PacienteInfoView.vue'
 
 import medico from '../views/medicoPaginas/CadastrarMedicoView.vue'
 import listar_medico from '../views/medicoPaginas/ListarMedicoView.vue'
 import medico_editar from '../views/medicoPaginas/EditarMedicoView.vue'
-import info_medico  from '../views/medicoPaginas/InfoMedicoView.vue'
+import info_medico from '../views/medicoPaginas/InfoMedicoView.vue'
 
 import consulta from '../views/consutlaPaginas/CdastrarConsultaView.vue'
+
+import cadastrar_exame from '../views/ExamePaginas/CadastrarExameView.vue'
 
 Vue.use(VueRouter)
 
@@ -97,6 +99,12 @@ const routes = [
     path: '/consulta:bi',
     name: 'consulta',
     component: consulta
+
+  },
+  {
+    path: '/cadastrar_exame:bi',
+    name: 'cadastrar_exame',
+    component: cadastrar_exame
 
   },
 ]

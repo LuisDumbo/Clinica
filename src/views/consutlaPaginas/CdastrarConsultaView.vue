@@ -1,6 +1,14 @@
 <template>
     <div class="historico_pacinte">
 
+        <div v-if="erro" class="alert alert-danger alert-dismissible animate__animated animate__fadeInDown">
+            <strong>Erro!</strong> Escolha Um Medico!
+        </div>
+
+        <div v-if="sucesso" class="alert alert-success alert-dismissible animate__animated animate__fadeInDown">
+            <strong>Registado!</strong> Paciente Foi Registado!
+        </div>
+
         <div class="card-header py-3">
             <h4 class="m-0 font-weight-bold text-dark text-center">Cadastrar Consulta
             </h4>
@@ -55,14 +63,14 @@
 
                         <div class="form-group col-6">
                             <label for="nome">Temperatua</label>
-                            <input type="text" v-model="temperatura" name="temperatura" value="" id="nome" required
-                                minlength="5" disabled class="form-control" />
+                            <input type="number" v-model="temperatura" name="temperatura" value="" id="nome" required
+                                minlength="5" class="form-control" />
 
                         </div>
 
                         <div class="form-group col-6">
                             <label>Peso</label>
-                            <input type="text" class="form-control" v-model="peso" name="peso" disabled
+                            <input type="number" class="form-control" v-model="peso" name="peso"
                                 placeholder="Insira o Documento da Identificação" autocomplete="off"
                                 required="requiored">
 
@@ -70,8 +78,8 @@
 
                         <div class="form-group col-6">
                             <label>Preção Arterial</label>
-                            <input type="text" class="form-control" v-model="presao_arterial" name="presao_arterial"
-                                disabled placeholder="Insira o Documento da Identificação" autocomplete="off"
+                            <input type="number" class="form-control" v-model="presao_arterial" name="presao_arterial"
+                                placeholder="Insira o Documento da Identificação" autocomplete="off"
                                 required="requiored">
 
                         </div>
@@ -198,8 +206,6 @@
 
     -->
 
-        <div>medico: {{ medico }}</div>
-
 
 
     </div>
@@ -216,6 +222,8 @@ export default {
         return {
 
             numero_exame: 1,
+            erro: null,
+            sucesso: null, 
 
             imgSrc: '',
 
@@ -248,7 +256,7 @@ export default {
             diagnostico: null,
             /// dados exame
             exame: [],
-            lista_de_exame: {},
+            lista_de_exame: [],
             lista_exame: {},
             receita: null,
 
@@ -282,9 +290,10 @@ export default {
             reader.onload = () => (this.imgSrc = reader.result)
         },
 
-        file() {
+        file(id_consulta, bi_paciente) {
 
             var i = 0;
+
             this.imagem.forEach(element => {
                 /// console.log(element)
                 let formData = new FormData();
@@ -298,22 +307,50 @@ export default {
                         'Authorization': `Bearer ${token}`
                     }
                 })
-                    .then((res) => {
+                    .then(async (res) => {
                         // this.$router.push({ path: '/listarPacinte' });
                         //  console.log(res.data.message)
                         this.mostrar = res.data.message
                         //()  this.lista = res.data.data;
+
                         this.lista_exame = {
                             nome: this.exame[i],
                             url: res.data.message
                         }
 
-                        Object.assign(this.lista_de_exame,this.lista_exame);
-                       // this.lista_de_exame.push(this.lista_exame)
+                        //  Object.assign(this.lista_de_exame,this.lista_exame);
+
+                        this.lista_de_exame.push({
+                            nome: this.exame[i],
+                            url: res.data.message
+                        })
+
+                        let dados = {
+
+                            BI: bi_paciente,
+                            dados: {
+                                consulta_id: id_consulta,
+                                nome: this.exame[i],
+                                url: res.data.message
+                            }
+
+                        }
+
+                        axios.post('http://localhost/historico_mais/api/registar_exame', dados, {
+                            headers: {
+
+                                'Authorization': `Bearer ${token}`
+                            }
+                        }).then((resposta) => {
+
+                            console.log(resposta.data)
+                        })
+
+
+
+
 
                         console.log(this.lista_exame)
-
-                        console.log(i)
                         i++
 
                         // console.log(this.exame[this.i])
@@ -329,39 +366,20 @@ export default {
 
             });
 
-           // console.log(this.lista_de_exame)
-            // this.zerarTudo()
+
+            this.zerarTudo()
+            this.exame_confirm = false
 
 
         },
 
         user: function (event) {
 
-            let dados = {
-                BI: this.doc_identificacao,
-                numero_ordem: this.medico,
-
-                dados: {
-                    data_consulta: this.date,
-                    local_consulta: this.local_consulta,
-                    descricao_sintomas: this.descricao_sintoma,
-                    diagnostico: this.diagnostico,
-                    receita: this.receita
-
-                }
-
-            }
-
-            if (this.exame_confirm) {
-
-                this.file()
-
-               
-               // Object.assign(dados.dados, { exame: this.lista_de_exame });
+            if (this.medico != "Medico") {
 
 
-               
-                dados = {
+
+                let dados = {
                     BI: this.doc_identificacao,
                     numero_ordem: this.medico,
 
@@ -370,90 +388,152 @@ export default {
                         local_consulta: this.local_consulta,
                         descricao_sintomas: this.descricao_sintoma,
                         diagnostico: this.diagnostico,
-                        receita: this.receita,
-                        exame: this.lista_de_exame
+                        receita: this.receita
 
                     }
 
-                } 
-                console.log(this.lista_de_exame)
+                }
+                if (this.triagem) {
+                    Object.assign(dados.dados, {
+                        triagem: {
+                            temperatura: this.temperatura,
+                            peso: this.peso,
+                            precao_arterial: this.presao_arterial
+                        }
+                    });
 
-                this.exame_confirm = null
+                    console.log("trigem ligado")
+                }
+
+                /*
+    
+                if (this.exame_confirm) {
+    
+                    this.file()
+    
+                    // Object.assign(dados.dados, { exame: this.lista_de_exame });
+                    dados = {
+                        BI: this.doc_identificacao,
+                        numero_ordem: this.medico,
+    
+                        dados: {
+                            data_consulta: this.date,
+                            local_consulta: this.local_consulta,
+                            descricao_sintomas: this.descricao_sintoma,
+                            diagnostico: this.diagnostico,
+                            receita: this.receita,
+                        },
+                        exame: {
+                            exame: this.lista_de_exame
+                        }
+    
+                    }
+                    console.log(this.lista_de_exame)
+    
+                    // this.exame_confirm = null
+                } */
+
+
+                //  this.doc_identificacao = ''
+                this.local_consulta = ''
+                this.medico = 'Medico'
+                this.date = ''
+                this.descricao_sintoma = ''
+                this.diagnostico = ''
+                this.receita = ''
+
+                this.temperatura = ''
+                this.peso = ''
+                this.presao_arterial = ''
+
+
+
+                this.lista = false
+
+                const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
+
+                axios.post('http://localhost/historico_mais/api/registar_consulta', dados, {
+                    headers: {
+
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                    .then((res) => {
+                        // this.$router.push({ path: '/listarPacinte' });
+
+                        console.log(res.data)
+                        console.log(res.data.data[0].header.id_consulta)
+
+                        var is_consula = res.data.data[0].header.id_consulta
+                        var bi_paciente = res.data.data[0].header.BI
+
+
+
+                        if (this.exame_confirm) {
+
+                            this.file(is_consula, bi_paciente)
+                        }
+
+
+
+                        this.listar()
+                        //()  this.lista = res.data.data;
+
+                    })
+                    .catch((error) => {
+                        console.error(error)
+                    })
+
+                /*
+       
+                   const dados = {
+       
+                       BI: this.doc_identificacao,
+                       dados: {
+                           nome: this.nome,
+                           Data: this.date,
+                           BI: this.doc_identificacao,
+                           sexo: this.sexo,
+                           numero: this.numero
+                       }
+       
+                   }
+                   this.lista = false
+       
+                   this.nome = ''
+                   this.date = ''
+                   this.doc_identificacao = ''
+                   this.sexo = ''
+                   this.numero = ''
+       
+                   const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
+       
+                   axios.post('http://localhost/historico_mais/api/editar_paciente', dados, {
+                       headers: {
+       
+                           'Authorization': `Bearer ${token}`
+                       }
+                   })
+                       .then((res) => {
+                           this.$router.push({ path: '/listarPacinte' });
+                          console.log(res.data)
+                           //()  this.lista = res.data.data;
+       
+                       })
+                       .catch((error) => {
+                           console.error(error)
+                       })
+       */
+
+                event.target.reset();
+                this.erro = null
+                this.triagem = false
+                this.sucesso= true
+            } else {
+                this.erro = true
             }
 
 
-            //  this.doc_identificacao = ''
-            this.local_consulta = ''
-            this.medico = 'Medico'
-            this.date = ''
-            this.descricao_sintoma = ''
-            this.diagnostico = ''
-            this.receita = ''
-
-            console.log(dados)
-            this.lista = false
-
-            const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
-
-            axios.post('http://localhost/historico_mais/api/registar_consulta', dados, {
-                headers: {
-
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-                .then((res) => {
-                   // this.$router.push({ path: '/listarPacinte' });
-                    console.log(res.data)
-                    this.listar()
-                    //()  this.lista = res.data.data;
-
-                })
-                .catch((error) => {
-                    console.error(error)
-                })
-
-            /*
-   
-               const dados = {
-   
-                   BI: this.doc_identificacao,
-                   dados: {
-                       nome: this.nome,
-                       Data: this.date,
-                       BI: this.doc_identificacao,
-                       sexo: this.sexo,
-                       numero: this.numero
-                   }
-   
-               }
-               this.lista = false
-   
-               this.nome = ''
-               this.date = ''
-               this.doc_identificacao = ''
-               this.sexo = ''
-               this.numero = ''
-   
-               const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
-   
-               axios.post('http://localhost/historico_mais/api/editar_paciente', dados, {
-                   headers: {
-   
-                       'Authorization': `Bearer ${token}`
-                   }
-               })
-                   .then((res) => {
-                       this.$router.push({ path: '/listarPacinte' });
-                      console.log(res.data)
-                       //()  this.lista = res.data.data;
-   
-                   })
-                   .catch((error) => {
-                       console.error(error)
-                   })
-   */
-
-            event.target.reset();
         },
         zerar() {
             this.imagem.length = 0
@@ -465,7 +545,7 @@ export default {
         },
         listar() {
 
-           
+
 
             const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
 

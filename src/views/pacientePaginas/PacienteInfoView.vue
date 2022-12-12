@@ -25,38 +25,13 @@
                     </div>
 
                 </div>
-                <div class="form-group">
 
-                </div>
 
-                <div class="form-group">
-                    <label for="data">Data Nasciemnto</label>
-                    <input type="date" v-model="date" name="data" id="data" required class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label for="local">Sexo</label>
-                    <select name="sexo" v-model="sexo">
-                        <option>Masculino</option>
-                        <option>Femenino</option>
-                    </select>
-                </div>
 
-                <div class="form-group">
-                    <label>BI</label>
-                    <input type="text" class="form-control" v-model="doc_identificacao" name="doc_identificacao"
-                        placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
-                </div>
-
-                <div class="form-group">
-                    <label>Numero</label>
-                    <input type="text" class="form-control" v-model="numero" name="numero"
-                        placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
-                </div>
 
 
                 <div style="text-align: right" class="d-flex flex-row">
-                    <button type="submit" name="utibtn" class="btn btn-success btn-small">Registar</button>
-                    <router-link class="btn bg-danger" to="/listarPacinte">Cancelar</router-link>
+                    <router-link class="btn bg-danger" to="/listarPacinte">Voltar</router-link>
                 </div>
             </form>
         </div>
@@ -82,22 +57,21 @@ export default {
     name: 'App',
     data() {
         return {
-            exame: null,
-            marcial: null,
+
             lista: false,
-            paciente: [],
+
 
             nome: null,
-            date: null,
+
             doc_identificacao: null,
-            sexo: null,
-            numero: null
+
 
         }
     }, created() {
         //this.getUser();
         this.redirecionar();
         this.listar();
+        this.historico()
     },
     methods: {
         redirecionar() {
@@ -107,48 +81,38 @@ export default {
             }
         },
 
-        user: function (event) {
+        user: function () {
 
-            const dados = {
 
-                BI: this.doc_identificacao,
-                dados: {
-                    nome: this.nome,
-                    Data: this.date,
-                    BI: this.doc_identificacao,
-                    sexo: this.sexo,
-                    numero: this.numero
-                }
+        },
 
-            }
-            this.lista = false
-
-            this.nome = ''
-            this.date = ''
-            this.doc_identificacao = ''
-            this.sexo = ''
-            this.numero = ''
-
+        historico() {
             const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
 
-            axios.post('http://localhost/historico_mais/api/editar_paciente', dados, {
+            axios.get('http://localhost/historico_mais/api/listar_consulta?bi=' + this.$route.params.bi + '', {
                 headers: {
-
                     'Authorization': `Bearer ${token}`
+                }, params: {
+                    BI: this.$route.params.bi
                 }
+            }).then((res) => {
+
+                console.log(res.data)
+
+                /*
+                console.log(this.$route.params.bi)
+                this.lista = res.data.data[0];
+
+                console.log(res.data.data[0].nome)
+                this.nome = res.data.data[0].nome ? res.data.data[0].nome : ""
+                this.date = res.data.data[0].Data ? res.data.data[0].Data : ""
+                this.doc_identificacao = res.data.data[0].BI ? res.data.data[0].BI : ""
+                this.sexo = res.data.data[0].sexo ? res.data.data[0].sexo : ""
+                this.numero = res.data.data[0].numero ? res.data.data[0].numero : "" */
+
+            }).catch((error) => {
+                console.error(error)
             })
-                .then((res) => {
-                    this.$router.push({ path: '/listarPacinte' });
-                    console.log(res.data)
-                    //()  this.lista = res.data.data;
-
-                })
-                .catch((error) => {
-                    console.error(error)
-                })
-
-
-            event.target.reset();
 
 
         },
@@ -162,29 +126,20 @@ export default {
                 }, params: {
                     BI: this.$route.params.bi
                 }
+            }).then((res) => {
+                console.log(res.data.data[0])
+                console.log(this.$route.params.bi)
+                this.lista = res.data.data[0];
+
+                console.log(res.data.data[0].nome)
+                this.nome = res.data.data[0].nome ? res.data.data[0].nome : ""
+                this.date = res.data.data[0].Data ? res.data.data[0].Data : ""
+                this.doc_identificacao = res.data.data[0].BI ? res.data.data[0].BI : ""
+                this.sexo = res.data.data[0].sexo ? res.data.data[0].sexo : ""
+                this.numero = res.data.data[0].numero ? res.data.data[0].numero : ""
+            }).catch((error) => {
+                console.error(error)
             })
-                .then((res) => {
-                    console.log(res.data.data[0])
-                    console.log(this.$route.params.bi)
-                    this.lista = res.data.data[0];
-
-                    console.log(res.data.data[0].nome)
-                    this.nome = res.data.data[0].nome ? res.data.data[0].nome : ""
-                    this.date = res.data.data[0].Data ? res.data.data[0].Data : ""
-                    this.doc_identificacao = res.data.data[0].BI ? res.data.data[0].BI : ""
-                    this.sexo = res.data.data[0].sexo ? res.data.data[0].sexo : ""
-                    this.numero = res.data.data[0].numero ? res.data.data[0].numero : ""
-
-
-
-                })
-                .catch((error) => {
-                    console.error(error)
-                })
-
-
-
-
 
         }
 
