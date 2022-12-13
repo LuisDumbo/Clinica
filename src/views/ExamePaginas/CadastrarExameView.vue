@@ -116,7 +116,7 @@ export default {
     data() {
         return {
 
-            local: null ,
+            local: null,
             numero_exame: 1,
             erro: null,
             sucesso: null,
@@ -184,7 +184,7 @@ export default {
             reader.readAsDataURL(files[0])
             reader.onload = () => (this.imgSrc = reader.result)
         },
-        
+
 
         file(id_consulta, bi_paciente) {
 
@@ -272,11 +272,13 @@ export default {
 
             this.lista = false
 
+
             var i = 0;
 
             this.imagem.forEach(element => {
                 let formData = new FormData();
                 formData.append('sendimage', element);
+                // console.log(this.local)
 
                 const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
 
@@ -315,19 +317,16 @@ export default {
                         console.log(this.lista_exame)
                         i++
 
-
-
-                    })
-                    .catch((error) => {
+                    }).catch((error) => {
                         console.error(error)
                     })
-
 
             });
 
             this.listar()
 
 
+           
             this.local_exame = ''
             this.medico = 'Medico'
             this.date = ''
@@ -336,15 +335,13 @@ export default {
             this.receita = ''
 
 
-            this.zerarTudo()
+
+            //  this.zerarTudo()
             this.exame_confirm = false
 
             event.target.reset();
             this.erro = null
             this.sucesso = true
-
-
-
         },
         zerar() {
             this.imagem.length = 0

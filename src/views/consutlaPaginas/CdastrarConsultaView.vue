@@ -223,7 +223,7 @@ export default {
 
             numero_exame: 1,
             erro: null,
-            sucesso: null, 
+            sucesso: null,
 
             imgSrc: '',
 
@@ -290,7 +290,7 @@ export default {
             reader.onload = () => (this.imgSrc = reader.result)
         },
 
-        file(id_consulta, bi_paciente) {
+        file(id_consulta, bi_paciente, event) {
 
             var i = 0;
 
@@ -306,56 +306,42 @@ export default {
 
                         'Authorization': `Bearer ${token}`
                     }
-                })
-                    .then(async (res) => {
-                        // this.$router.push({ path: '/listarPacinte' });
-                        //  console.log(res.data.message)
-                        this.mostrar = res.data.message
-                        //()  this.lista = res.data.data;
+                }).then(async (res) => {
 
-                        this.lista_exame = {
+                    let dados = {
+
+                        BI: bi_paciente,
+                        dados: {
+                            local_exame: this.local_consulta,
+                            consulta_id: id_consulta,
                             nome: this.exame[i],
                             url: res.data.message
                         }
 
-                        //  Object.assign(this.lista_de_exame,this.lista_exame);
+                    }
 
-                        this.lista_de_exame.push({
-                            nome: this.exame[i],
-                            url: res.data.message
-                        })
+                    console.log(this.exame[i])
 
-                        let dados = {
+                    axios.post('http://localhost/historico_mais/api/registar_exame', dados, {
+                        headers: {
 
-                            BI: bi_paciente,
-                            dados: {
-                                consulta_id: id_consulta,
-                                nome: this.exame[i],
-                                url: res.data.message
-                            }
-
+                            'Authorization': `Bearer ${token}`
                         }
+                    }).then((resposta) => {
 
-                        axios.post('http://localhost/historico_mais/api/registar_exame', dados, {
-                            headers: {
-
-                                'Authorization': `Bearer ${token}`
-                            }
-                        }).then((resposta) => {
-
-                            console.log(resposta.data)
-                        })
-
-
-
-
-
-                        console.log(this.lista_exame)
-                        i++
-
-                        // console.log(this.exame[this.i])
-
+                        console.log(resposta.data)
                     })
+
+
+
+
+
+                    console.log(this.lista_exame)
+                    i++
+
+                    // console.log(this.exame[this.i])
+
+                })
                     .catch((error) => {
                         console.error(error)
                     })
@@ -367,13 +353,22 @@ export default {
             });
 
 
-            this.zerarTudo()
+
+            //this.zerarTudo()
             this.exame_confirm = false
+
+            event.target.reset();
+            this.erro = null
+            this.triagem = false
+            this.sucesso = true
 
 
         },
 
         user: function (event) {
+
+            this.lista = false
+            this.sucesso = false
 
             if (this.medico != "Medico") {
 
@@ -435,7 +430,7 @@ export default {
 
 
                 //  this.doc_identificacao = ''
-                this.local_consulta = ''
+
                 this.medico = 'Medico'
                 this.date = ''
                 this.descricao_sintoma = ''
@@ -447,9 +442,6 @@ export default {
                 this.presao_arterial = ''
 
 
-
-                this.lista = false
-
                 const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
 
                 axios.post('http://localhost/historico_mais/api/registar_consulta', dados, {
@@ -457,32 +449,34 @@ export default {
 
                         'Authorization': `Bearer ${token}`
                     }
+                }).then((res) => {
+                    // this.$router.push({ path: '/listarPacinte' });
+
+                    console.log(res.data)
+                    console.log(res.data.data[0].id_consulta)
+
+                    console.log(this.exame)
+
+
+                    var is_consula = res.data.data[0].id_consulta
+                    var bi_paciente = res.data.data[0].BI
+
+
+
+
+                    if (this.exame_confirm) {
+
+                        this.file(is_consula, bi_paciente, event)
+                    }
+
+
+
+                    this.listar()
+                    //()  this.lista = res.data.data;
+
+                }).catch((error) => {
+                    console.error(error)
                 })
-                    .then((res) => {
-                        // this.$router.push({ path: '/listarPacinte' });
-
-                        console.log(res.data)
-                        console.log(res.data.data[0].header.id_consulta)
-
-                        var is_consula = res.data.data[0].header.id_consulta
-                        var bi_paciente = res.data.data[0].header.BI
-
-
-
-                        if (this.exame_confirm) {
-
-                            this.file(is_consula, bi_paciente)
-                        }
-
-
-
-                        this.listar()
-                        //()  this.lista = res.data.data;
-
-                    })
-                    .catch((error) => {
-                        console.error(error)
-                    })
 
                 /*
        
@@ -525,12 +519,10 @@ export default {
                        })
        */
 
-                event.target.reset();
-                this.erro = null
-                this.triagem = false
-                this.sucesso= true
+
             } else {
                 this.erro = true
+                this.listar()
             }
 
 
