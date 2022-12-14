@@ -15,6 +15,8 @@ import consulta from '../views/consutlaPaginas/CdastrarConsultaView.vue'
 
 import cadastrar_exame from '../views/ExamePaginas/CadastrarExameView.vue'
 
+import historico_pacinte_consutla from '../views/pacientePaginas/ConsultaInfoView.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -33,6 +35,14 @@ const routes = [
     path: '/historico_pacinte:bi',
     name: 'historico_pacinte',
     component: historico_pacinte
+
+  }
+  ,
+  {
+    path: '/historico_pacinte_consutla:bi/:id_consulta',
+    name: 'historico_pacinte_consutla',
+    component: historico_pacinte_consutla, 
+   
 
   },
   {

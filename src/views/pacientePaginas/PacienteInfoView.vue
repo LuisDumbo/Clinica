@@ -62,11 +62,11 @@
                             <template slot="table-row" slot-scope="props">
                                 <span class="d-flex justify-content-center" v-if="props.column.field == 'actions'">
                                     <router-link class="btn bg-success btn-sm text-center"
-                                        :to="{ name: 'consulta', params: { bi: props.row.bi } }">Ver</router-link>
+                                        :to="{ name: 'historico_pacinte_consutla', params: { bi: doc_identificacao , id_consulta: props.row.id_consulta  } }">Ver</router-link>
 
-                                      <img src="https://fililuisdumbo.s3.sa-east-1.amazonaws.com/images/rx_braco_Luis.jpg" alt="" width="66" height="66" srcset="">   
+                                  
                                 </span>
-                            </template>                     
+                            </template>
 
                         </vue-good-table>
                     </div>
@@ -93,11 +93,17 @@
                             </div>
                             <template slot="table-row" slot-scope="props">
                                 <span class="d-flex justify-content-center" v-if="props.column.field == 'actions'">
+                                    <!--
                                     <router-link class="btn bg-success btn-sm"
-                                        :to="{ name: 'consulta', params: { bi: props.row.bi } }">Ver</router-link>
+                                        :to="{ name: 'consulta', params: { bi: props.row.bi } }">Ver</router-link> -->
+
+
+                                    <img :src="props.row.url" @click="ver(props.row.url)" alt="" width="66" height="66"
+                                        srcset="" data-toggle="modal" data-target="#exampleModal">
+
                                 </span>
                             </template>
-                            
+
 
                         </vue-good-table>
                     </div>
@@ -110,19 +116,39 @@
                     <router-link class="btn bg-danger" to="/listarPacinte">Voltar</router-link>
                 </div>
             </form>
+            <!-- Button trigger modal  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                Launch demo modal
+            </button> -->
+
+
+            <!-- Modal -->
+            <div class="modal fade " id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered " role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Imagem</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <img :src="img_nem" height="300px" width="100%" alt="" srcset="">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+
 
         <div v-else class="spinner "> </div>
 
 
     </div>
-
-
-
-
-
-
-
 </template>
   
   
@@ -136,6 +162,7 @@ export default {
 
             confirm_consulta: true,
             confirm_exames: null,
+            img_nem: null,
 
 
             columns: [
@@ -158,19 +185,13 @@ export default {
                     field: 'actions',
                     sortable: false,
                     // html: true,
-                }
-                /*
+                },
                 {
-                    label: 'Sexo',
-                    field: 'sexo',
+                    label: 'Id_consulta',
+                    field: 'id_consulta',
+                    hidden: true,
                 }
-                ,
-                {
-                    label: 'Consulta',
-                    field: 'actions',
-                    sortable: false,
-                    // html: true,
-                } */
+               
             ],
             rows: [
                 // { id: 1, name: "John", actions: 20, createdAt: '', score: 0.03343 },
@@ -197,19 +218,12 @@ export default {
                     sortable: false,
                     // html: true,
                 }
-
-                /*
-                {
-                    label: 'Sexo',
-                    field: 'sexo',
-                }
                 ,
                 {
-                    label: 'Consulta',
-                    field: 'actions',
-                    sortable: false,
-                    // html: true,
-                } */
+                    label: 'Url',
+                    field: 'url',
+                    hidden: true,
+                }
             ],
             rows_exame: [
                 // { id: 1, name: "John", actions: 20, createdAt: '', score: 0.03343 },
@@ -237,10 +251,15 @@ export default {
     },
     methods: {
         redirecionar() {
-            // this.$route.params.bi ? "" : this.$router.push({path: '/listarPacinte'})
+           
             if (this.$route.params.bi === 'undefined') {
                 this.$router.push({ path: '/listarPacinte' })
             }
+        },
+        ver(url) {
+            console.log("ver clicado com a url" + url)
+            this.img_nem = url
+
         },
 
         user: function () {
@@ -276,19 +295,10 @@ export default {
 
                 this.lista_consulta.forEach(element => {
                     console.log(element.diagnostico)
-                    this.rows.push({ diagnostico: "" + element.diagnostico ? element.diagnostico : "" + "", date: "" + element.data_consulta ? element.data_consulta : "" + "", local: "" + element.local_consulta ? element.local_consulta : "" + "" /*, sexo: "" + element.sexo ? element.sexo : "" + "", actions: '' */ }) //<input type="submit" value="">
+                    this.rows.push({ diagnostico: "" + element.diagnostico ? element.diagnostico : "" + "", date: "" + element.data_consulta ? element.data_consulta : "" + "", local: "" + element.local_consulta ? element.local_consulta : "" + "", id_consulta: "" + element.id_consulta ? element.id_consulta : "" + "" /*, sexo: "" + element.sexo ? element.sexo : "" + "", actions: '' */ }) //<input type="submit" value="">
                 });
 
-                /*
-                console.log(this.$route.params.bi)
-                this.lista = res.data.data[0];
-
-                console.log(res.data.data[0].nome)
-                this.nome = res.data.data[0].nome ? res.data.data[0].nome : ""
-                this.date = res.data.data[0].Data ? res.data.data[0].Data : ""
-                this.doc_identificacao = res.data.data[0].BI ? res.data.data[0].BI : ""
-                this.sexo = res.data.data[0].sexo ? res.data.data[0].sexo : ""
-                this.numero = res.data.data[0].numero ? res.data.data[0].numero : "" */
+              
 
             }).catch((error) => {
                 console.error(error)
@@ -309,7 +319,7 @@ export default {
 
                 this.lista_exame.forEach(element => {
                     console.log(element.url)
-                    this.rows_exame.push({ nome: "" + element.nome ? element.nome : "" + "", local: "" + element.local_exame ? element.local_exame : "" + "", date: "" + element.data ? element.data : "" + "" /*, sexo: "" + element.sexo ? element.sexo : "" + "", actions: '' */ }) //<input type="submit" value="">
+                    this.rows_exame.push({ nome: "" + element.nome ? element.nome : "" + "", local: "" + element.local_exame ? element.local_exame : "" + "", date: "" + element.data ? element.data : "" + "", url: "" + element.url ? element.url : "" + "",/*, sexo: "" + element.sexo ? element.sexo : "" + "", actions: '' */ }) //<input type="submit" value="">
                 });
 
                 /*
