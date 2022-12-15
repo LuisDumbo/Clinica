@@ -1,16 +1,10 @@
 <template>
     <div class="historico_pacinte_consutla">
 
-        <div v-if="erro" class="alert alert-danger alert-dismissible animate__animated animate__fadeInDown">
-            <strong>Erro!</strong> Escolha Um Medico!
-        </div>
-
-        <div v-if="sucesso" class="alert alert-success alert-dismissible animate__animated animate__fadeInDown">
-            <strong>Registado!</strong> Paciente Foi Registado!
-        </div>
+       
 
         <div class="card-header py-3">
-            <h4 class="m-0 font-weight-bold text-dark text-center">Cadastrar Consulta
+            <h4 class="m-0 font-weight-bold text-dark text-center">Informação da Consulta
             </h4>
         </div>
 
@@ -37,9 +31,8 @@
                     <div class=" form-group col-6">
 
                         <label>Medico</label>
-                        <input type="text" class="form-control" v-model="medico" name="doc_identificacao"
-                            disabled placeholder="Insira o Documento da Identificação" autocomplete="off"
-                            required="requiored">
+                        <input type="text" class="form-control" v-model="medico" name="doc_identificacao" disabled
+                            placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
                     </div>
 
 
@@ -90,7 +83,8 @@
                 <div class="row">
                     <div class="form-group col-6">
                         <label for="data">Data Consulta</label>
-                        <input type="date" disabled  v-model="date" name="data" id="data" required class="form-control" />
+                        <input type="date" disabled v-model="date" name="data" id="data" required
+                            class="form-control" />
                     </div>
                     <div class="form-group col-6">
                         <label>Local</label>
@@ -101,63 +95,54 @@
                 </div>
                 <div class="form-group ">
                     <label for="exampleFormControlTextarea1">Descrição Sintomas </label>
-                    <textarea disabled class="form-control" name="descricao_sintoma" v-model="descricao_sintoma" required
-                        id="exampleFormControlTextarea1" rows="3"></textarea>
+                    <textarea disabled class="form-control" name="descricao_sintoma" v-model="descricao_sintoma"
+                        required id="exampleFormControlTextarea1" rows="3"></textarea>
                 </div>
 
                 <div class="form-group ">
                     <label>Diagnóstico</label>
-                    <input type="text"  disabled class="form-control" v-model="diagnostico" name="diagnostico"
+                    <input type="text" disabled class="form-control" v-model="diagnostico" name="diagnostico"
                         placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
                 </div>
 
-                <div class="row" id="linha-horizontal"> </div>
-
-                <div class=" form-group col-6">
-
-                    <input type="checkbox" id="checkbox_exame" v-model="exame_confirm" @input="zerarTudo" />
-                    <label for="checkbox_exame">Exames</label>
-                </div>
 
                 <div v-if="exame_confirm">
 
+
+                    <div class="row" id="linha-horizontal"> </div>
+
                     <div class=" form-group col-6">
 
-                        <input type="number" id="numero_exame" v-model.number="numero_exame" @input="zerar" />
+                        <label for="checkbox_exame">Exames</label>
                     </div>
-                    <div>
 
-                        <table id="example" class=" table table-bordered " cellspacing="0" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>Nª</th>
-                                    <th>Exame</th>
-                                    <th>Resultado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                    <div class="card shadow mb-4">
 
-                                <tr class="animate__animated animate__fadeIn " v-for=" um_exame in numero_exame"
-                                    :key="um_exame.id">
-                                    <td>
-                                        {{ um_exame }}
-                                    </td>
-                                    <td>
-                                        <input type="text" step="any" class="form-control" name="exame[]"
-                                            v-model="exame[um_exame - 1]" placeholder="Exame" autocomplete="off"
-                                            required="requiored">
-                                    </td>
-                                    <td>
-                                        <input type="file" ref="file" step="any" class="form-control" name="solucao[]"
-                                            @change="onFile" placeholder="Resultado" autocomplete="off"
-                                            required="requiored">
-                                    </td>
+                        <div>
+                            <vue-good-table :columns="columns_exame" :rows="rows_exame" :line-numbers="true"
+                                :search-options="{
+                                    enabled: true
+                                }" :pagination-options="{
+    enabled: true,
+    mode: 'records',
+    perPage: 3,
+}">
+                                <div slot="emptystate">
+                                    Sem dados
+                                </div>
+                                <template slot="table-row" slot-scope="props">
+                                    <span class="d-flex justify-content-center" v-if="props.column.field == 'actions'">
+                                        <img :src="props.row.url" @click="ver(props.row.url)" alt="" width="66"
+                                            height="66" srcset="" data-toggle="modal" data-target="#exampleModal">
 
-                                </tr>
-                            </tbody>
-                        </table>
-
+                                    </span>
+                                </template>
+                            </vue-good-table>
+                        </div>
                     </div>
+
+
+                    <imagem_modal :url="img_modal" />
 
                 </div>
 
@@ -167,7 +152,7 @@
 
                 <div class="form-group ">
                     <label for="exampleFormControlTextarea1">Receita </label>
-                    <textarea class="form-control"  disabled v-model="receita" name="receita" required
+                    <textarea class="form-control" disabled v-model="receita" name="receita" required
                         id="exampleFormControlTextarea1" rows="3"></textarea>
                 </div>
 
@@ -189,26 +174,24 @@
   
 <script>
 import axios from "axios"
-
+import imagem_modal from '@/components/ModalImg.vue'
 export default {
     name: 'App',
+    components: {
+        imagem_modal
+    },
     data() {
         return {
 
-            numero_exame: 1,
-            erro: null,
-            sucesso: null,
 
-            imgSrc: '',
+            img_modal: null,
 
-            imagem: [],
-            mostrar: '',
 
             triagem: null,
             exame_confirm: null,
 
             medico: 'Medico',
-            options: [],
+
 
             marcial: null,
             lista: false,
@@ -236,92 +219,51 @@ export default {
 
 
             sexo: null,
-            numero: null
+            numero: null,
+
+            columns_exame: [
+                {
+                    label: 'Nome',
+                    field: 'nome',
+                },
+                {
+                    label: 'Exame',
+                    field: 'actions',
+                    sortable: false,
+                    // html: true,
+                }
+                ,
+                {
+                    label: 'Url',
+                    field: 'url',
+                    hidden: true,
+                }
+            ],
+            rows_exame: [
+                // { id: 1, name: "John", actions: 20, createdAt: '', score: 0.03343 },
+            ],
+
+
 
         }
     }, created() {
 
         this.redirecionar();
         this.listar();
-        // this.medicos();
+       
         this.consulta_info()
     },
     methods: {
+        ver(url) {
+            
+            this.img_modal = url
 
+        },
         redirecionar() {
 
             if (this.$route.params.bi === 'undefined') {
                 this.$router.push({ path: '/listarPacinte' })
             }
-        },
-        onFile(e) {
-            const files = e.target.files
-            if (!files.length) return
-
-            this.imagem.push(files[0]);
-
-            const reader = new FileReader()
-            reader.readAsDataURL(files[0])
-            reader.onload = () => (this.imgSrc = reader.result)
-        },
-
-        file(id_consulta, bi_paciente, event) {
-
-            var i = 0;
-
-            this.imagem.forEach(element => {
-                /// console.log(element)
-                let formData = new FormData();
-                formData.append('sendimage', element);
-
-                const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
-
-                axios.post('http://localhost/historico_mais/api/arquivo', formData, {
-                    headers: {
-
-                        'Authorization': `Bearer ${token}`
-                    }
-                }).then(async (res) => {
-
-                    let dados = {
-
-                        BI: bi_paciente,
-                        dados: {
-                            local_exame: this.local_consulta,
-                            consulta_id: id_consulta,
-                            nome: this.exame[i],
-                            url: res.data.message
-                        }
-
-                    }
-
-                    axios.post('http://localhost/historico_mais/api/registar_exame', dados, {
-                        headers: {
-
-                            'Authorization': `Bearer ${token}`
-                        }
-                    }).then(() => {
-
-
-                    })
-
-                    i++
-
-                }).catch((error) => {
-                    console.error(error)
-                })
-
-            });
-
-
-            this.exame_confirm = false
-
-            event.target.reset();
-            this.erro = null
-            this.triagem = false
-            this.sucesso = true
-
-
         },
         consulta_info() {
 
@@ -335,7 +277,8 @@ export default {
                     BI: this.$route.params.bi
                 }
             }).then((res) => {
-                console.log(res.data.data[0])
+              
+
 
                 this.medicos(res.data.data[0].numero_ordem)
 
@@ -346,30 +289,33 @@ export default {
                     this.presao_arterial = res.data.data[0].triagem.precao_arterial
                 }
 
-                this.date =res.data.data[0].data_consulta
+                this.date = res.data.data[0].data_consulta
                 this.local_consulta = res.data.data[0].local_consulta
-                this.descricao_sintoma= res.data.data[0].descricao_sintomas
+                this.descricao_sintoma = res.data.data[0].descricao_sintomas
                 this.diagnostico = res.data.data[0].diagnostico
                 this.receita = res.data.data[0].receita
+
+
+                if (res.data.data[0].exame) {
+
+                    this.exame_confirm = true
+
+                    this.lista_de_exame.push(res.data.data[0].exame)
+                  
+
+                    this.lista_de_exame.forEach(element => {
+                       
+                        this.rows_exame.push({ nome: "" + element.nome ? element.nome : "" + "", url: "" + element.url ? element.url : "" + "" })
+                    });
+
+                }
 
             }).catch((error) => {
                 console.error(error)
             })
 
         },
-
-
-        zerar() {
-            this.imagem.length = 0
-            this.exame.length = 0
-        },
-        zerarTudo() {
-            this.zerar()
-            this.numero_exame = 1
-        },
         listar() {
-
-
 
             const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
 
@@ -414,7 +360,6 @@ export default {
                     this.lista_medicos.forEach(element => {
                         this.medico = element.nome
 
-                        this.options.push({ text: element.nome, value: element.numero_rodem ? element.numero_rodem : "" }) //<input type="submit" value="">
                     });
                 })
                 .catch((error) => {

@@ -62,9 +62,7 @@
                             <template slot="table-row" slot-scope="props">
                                 <span class="d-flex justify-content-center" v-if="props.column.field == 'actions'">
                                     <router-link class="btn bg-success btn-sm text-center"
-                                        :to="{ name: 'historico_pacinte_consutla', params: { bi: doc_identificacao , id_consulta: props.row.id_consulta  } }">Ver</router-link>
-
-                                  
+                                        :to="{ name: 'historico_pacinte_consutla', params: { bi: doc_identificacao, id_consulta: props.row.id_consulta } }">Ver</router-link>
                                 </span>
                             </template>
 
@@ -75,8 +73,6 @@
                 <div v-if="confirm_exames" class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h4 class="m-0 font-weight-bold text-dark text-center">Listar Exame</h4>
-
-
                     </div>
 
                     <div>
@@ -103,8 +99,6 @@
 
                                 </span>
                             </template>
-
-
                         </vue-good-table>
                     </div>
                 </div>
@@ -122,25 +116,8 @@
 
 
             <!-- Modal -->
-            <div class="modal fade " id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered " role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Imagem</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <img :src="img_nem" height="300px" width="100%" alt="" srcset="">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <imagem_modal :url="img_nem" />
+
         </div>
 
 
@@ -154,9 +131,13 @@
   
 <script>
 import axios from "axios"
+import imagem_modal from '@/components/ModalImg.vue'
 
 export default {
     name: 'App',
+    components: {
+        imagem_modal
+    },
     data() {
         return {
 
@@ -191,7 +172,7 @@ export default {
                     field: 'id_consulta',
                     hidden: true,
                 }
-               
+
             ],
             rows: [
                 // { id: 1, name: "John", actions: 20, createdAt: '', score: 0.03343 },
@@ -251,7 +232,7 @@ export default {
     },
     methods: {
         redirecionar() {
-           
+
             if (this.$route.params.bi === 'undefined') {
                 this.$router.push({ path: '/listarPacinte' })
             }
@@ -298,7 +279,7 @@ export default {
                     this.rows.push({ diagnostico: "" + element.diagnostico ? element.diagnostico : "" + "", date: "" + element.data_consulta ? element.data_consulta : "" + "", local: "" + element.local_consulta ? element.local_consulta : "" + "", id_consulta: "" + element.id_consulta ? element.id_consulta : "" + "" /*, sexo: "" + element.sexo ? element.sexo : "" + "", actions: '' */ }) //<input type="submit" value="">
                 });
 
-              
+
 
             }).catch((error) => {
                 console.error(error)
