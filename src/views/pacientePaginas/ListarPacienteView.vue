@@ -24,7 +24,8 @@
                         <span class="d-flex flex-row" v-if="props.column.field == 'actions'">
                             <router-link class="btn btn-primary btn-sm w-25 " :to="{ name: 'historico_pacinte', params: { bi: props.row.bi } }">Info</router-link> <!--{{props.row.bi}} -->
                             <router-link class="btn bg-success btn-sm"  :to="{ name: 'consulta', params: { bi: props.row.bi } }">Constula</router-link> 
-                            <router-link class="btn bg-info btn-sm"  :to="{ name: 'cadastrar_exame', params: { bi: props.row.bi } }">Exame </router-link> 
+                            <router-link class="btn bg-info btn-sm"  :to="{ name: 'cadastrar_exame', params: { bi: props.row.bi } }">Exame </router-link>
+                            <router-link class="btn bg-success btn-sm"  :to="{ name: 'cadastrar_procedimento', params: { bi: props.row.bi } }">Procedimento </router-link> 
                             <router-link class="btn bg-warning btn-sm" :to="{ name: 'editar_paciente', params: { bi: props.row.bi } }">Edit </router-link> 
                         </span>
                     </template>

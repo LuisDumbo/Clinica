@@ -14,6 +14,7 @@ import info_medico from '../views/medicoPaginas/InfoMedicoView.vue'
 import consulta from '../views/consutlaPaginas/CdastrarConsultaView.vue'
 
 import cadastrar_exame from '../views/ExamePaginas/CadastrarExameView.vue'
+import cadastrar_procedimento from '../views/procedimentoPaginas/CadastrarProcedimentoView'
 
 import historico_pacinte_consutla from '../views/pacientePaginas/ConsultaInfoView.vue'
 
@@ -117,6 +118,12 @@ const routes = [
     component: cadastrar_exame
 
   },
+  {
+    path: '/cadastrar_procedimento:bi',
+    name: 'cadastrar_procedimento',
+    component: cadastrar_procedimento
+
+  }
 ]
 
 const router = new VueRouter({

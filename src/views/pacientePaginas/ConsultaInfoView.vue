@@ -158,7 +158,7 @@
 
                 <div style="text-align: right" class="d-flex flex-row">
                     <router-link class="btn bg-danger"
-                        :to="{ name: 'historico_pacinte', params: { bi: doc_identificacao } }">Cancelar</router-link>
+                        :to="{ name: 'historico_pacinte', params: { bi: doc_identificacao } }">Voltar</router-link>
                 </div>
             </form>
         </div>

@@ -71,16 +71,14 @@
                         <div class="form-group col-6">
                             <label>Peso</label>
                             <input type="number" class="form-control" v-model="peso" name="peso"
-                                placeholder="Insira o Documento da Identificação" autocomplete="off"
-                                required="requiored">
+                                placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
 
                         </div>
 
                         <div class="form-group col-6">
                             <label>Preção Arterial</label>
                             <input type="number" class="form-control" v-model="presao_arterial" name="presao_arterial"
-                                placeholder="Insira o Documento da Identificação" autocomplete="off"
-                                required="requiored">
+                                placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
 
                         </div>
                     </div>
@@ -167,6 +165,57 @@
 
                 </div>
 
+                <div class="row" id="linha-horizontal"> </div>
+
+                <div class=" form-group col-6">
+
+                    <input type="checkbox" id="checkbox_procedimento" v-model="procedimento_confirm" @input="zerarTudo" />
+                    <label for="checkbox_procedimento">Procedimento Medico</label>
+                </div>
+
+                <div v-if="procedimento_confirm">
+
+                    <div class=" form-group col-6">
+
+                        <input type="number" id="numero_exame" v-model.number="numero_procedimento"
+                            @input="zerar_procedimeno" />
+                    </div>
+                    <div>
+
+                        <table id="example" class=" table table-bordered " cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Nª</th>
+                                    <th>Procedimento</th>
+                                    <th>Descrição</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="animate__animated animate__fadeIn "
+                                    v-for=" um_procedimento in numero_procedimento" :key="um_procedimento.id">
+                                    <td>
+                                        {{ um_procedimento }}
+                                    </td>
+                                    <td>
+                                        <input type="text" step="any" class="form-control" name="procedimento[]"
+                                            v-model="procedimento[um_procedimento - 1]" placeholder="Procedimento"
+                                            autocomplete="off" required="requiored">
+                                    </td>
+                                    <td>
+                                        <input type="text" step="any" class="form-control" name="procedimento_descricao[]"
+                                            v-model="procedimento_descricao[um_procedimento - 1]"
+                                            placeholder="procedimento_descricao" autocomplete="off" required="requiored">
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+
 
 
                 <div class="row" id="linha-horizontal"> </div>
@@ -188,28 +237,27 @@
 
         <!--
 
-       
+                                                                               
 
-        <select v-model="medico">
-            <option v-for="option in options" :key="option" :value="option.value">
-                {{ option.text }}
-            </option>
-        </select>
+                                                                                <select v-model="medico">
+                                                                                    <option v-for="option in options" :key="option" :value="option.value">
+                                                                                        {{ option.text }}
+                                                                                    </option>
+                                                                                </select>
 
-        <div>medico: {{ medico }}</div>
-        <div>Exame: {{ exame }}</div>
+                                                                                <div>medico: {{ medico }}</div>
+                                                                                <div>Exame: {{ exame }}</div>
 
 
-        <input type="file" @change="onFile" />
-        <img :src="imgSrc" v-if="imgSrc" />
-        <img :src="imgSrc" v-if="imgSrc" />
+                                                                                <input type="file" @change="onFile" />
+                                                                                <img :src="imgSrc" v-if="imgSrc" />
+                                                                                <img :src="imgSrc" v-if="imgSrc" />
 
-    -->
+                                                                            -->
 
 
 
     </div>
-
 </template>
   
   
@@ -222,6 +270,7 @@ export default {
         return {
 
             numero_exame: 1,
+            numero_procedimento: 1,
             erro: null,
             sucesso: null,
 
@@ -232,6 +281,7 @@ export default {
 
             triagem: null,
             exame_confirm: null,
+            procedimento_confirm: null,
 
             medico: 'Medico',
             options: [],
@@ -256,6 +306,8 @@ export default {
             diagnostico: null,
             /// dados exame
             exame: [],
+            procedimento: [],
+            procedimento_descricao: [],
             lista_de_exame: [],
             lista_exame: {},
             receita: null,
@@ -356,6 +408,7 @@ export default {
 
             //this.zerarTudo()
             this.exame_confirm = false
+            this.procedimento_confirm = false
 
             event.target.reset();
             this.erro = null
@@ -364,6 +417,52 @@ export default {
 
 
         },
+        procedimento_save(id_consulta, bi_paciente, event) {
+            var i = 0;
+
+            this.procedimento.forEach(elemnto => {
+
+                const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
+
+
+
+                let dados = {
+
+                    BI: bi_paciente,
+                    dados: {
+                        local_procedimento: this.local_consulta,
+                        consulta_id: id_consulta,
+                        procedimento: elemnto,
+                        descricoao: this.procedimento_descricao[i]
+                    }
+
+                }
+                axios.post('http://localhost/historico_mais/api/registar_procedimento', dados, {
+                    headers: {
+
+                        'Authorization': `Bearer ${token}`
+                    }
+                }).then((resposta) => {
+
+                    console.log(resposta.data)
+                })
+
+                // console.log(`Porcedimento confirme ${elemnto} com as devidas descricao ${this.procedimento_descricao[i]} `)
+
+                i++
+
+            })
+
+            this.zerar_procedimeno()
+            this.exame_confirm = false
+            this.procedimento_confirm = false
+
+            event.target.reset();
+            this.erro = null
+            this.triagem = false
+            this.sucesso = true
+        },
+
 
         user: function (event) {
 
@@ -468,6 +567,12 @@ export default {
 
                         this.file(is_consula, bi_paciente, event)
                     }
+                    if (this.procedimento_confirm) {
+
+
+                        this.procedimento_save(is_consula, bi_paciente, event)
+
+                    }
 
 
 
@@ -531,9 +636,24 @@ export default {
             this.imagem.length = 0
             this.exame.length = 0
         },
+        zerar_procedimeno() {
+
+            this.procedimento.length = 0
+            this.procedimento_descricao.length = 0
+
+        },
         zerarTudo() {
-            this.zerar()
-            this.numero_exame = 1
+            if (this.exame_confirm) {
+                this.zerar()
+                this.numero_exame = 1
+
+            }
+            if (this.procedimento_confirm) {
+                ////
+                this.zerar_procedimeno()
+                this.numero_procedimento = 1
+            }
+
         },
         listar() {
 

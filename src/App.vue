@@ -8,16 +8,13 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-         
-         
-
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
               Paceinte
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              
+
               <router-link class="dropdown-item" to="/paciente">Cadastar Paciente</router-link>
               <router-link class="dropdown-item" to="/listarPacinte">Listar Paciente</router-link>
             </div>
