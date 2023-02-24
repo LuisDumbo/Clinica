@@ -40,7 +40,7 @@
 
 
                 <div class="form-group col-6">
-                    <h5 class="font-weight-bold">Dados Exame</h5>
+                    <h5 class="font-weight-bold">Dados Procedimento</h5>
 
                 </div>
 
@@ -49,12 +49,13 @@
                 <div class="form-group">
                     <label>Local</label>
                     <input type="text" class="form-control" v-model="local" name="local_exame"
-                        placeholder="Local Do Exame" autocomplete="off" required="requiored">
+                        placeholder="Local Do Procedimento" autocomplete="off" required="requiored">
                 </div>
 
                 <div class=" form-group col-6">
 
-                    <input type="number" id="numero_exame" v-model.number="numero_exame" @input="zerar" />
+                    <input type="number" id="numero_exame" v-model.number="numero_procedimento"
+                        @input="zerar_procedimeno" />
                 </div>
 
 
@@ -64,31 +65,32 @@
                         <thead>
                             <tr>
                                 <th>Nª</th>
-                                <th>Exame</th>
-                                <th>Resultado</th>
+                                <th>Procedimento</th>
+                                <th>Descrição</th>
                             </tr>
                         </thead>
                         <tbody>
 
-                            <tr class="animate__animated animate__fadeIn " v-for=" um_exame in numero_exame"
-                                :key="um_exame.id">
+                            <tr class="animate__animated animate__fadeIn " v-for=" um_procedimento in numero_procedimento"
+                                :key="um_procedimento.id">
                                 <td>
-                                    {{ um_exame }}
+                                    {{ um_procedimento }}
                                 </td>
                                 <td>
-                                    <input type="text" step="any" class="form-control" name="exame[]"
-                                        v-model="exame[um_exame - 1]" placeholder="Exame" autocomplete="off"
-                                        required="requiored">
+                                    <input type="text" step="any" class="form-control" name="procedimento[]"
+                                        v-model="procedimento[um_procedimento - 1]" placeholder="Procedimento"
+                                        autocomplete="off" required="requiored">
                                 </td>
                                 <td>
-                                    <input type="file" ref="file" step="any" class="form-control" name="solucao[]"
-                                        @change="onFile" placeholder="Resultado" autocomplete="off"
-                                        required="requiored">
+                                    <input type="text" step="any" class="form-control" name="procedimento_descricao[]"
+                                        v-model="procedimento_descricao[um_procedimento - 1]"
+                                        placeholder="procedimento_descricao" autocomplete="off" required="requiored">
                                 </td>
 
                             </tr>
                         </tbody>
                     </table>
+
 
                 </div>
 
@@ -104,7 +106,6 @@
 
 
     </div>
-
 </template>
   
   
@@ -117,7 +118,7 @@ export default {
         return {
 
             local: null,
-            numero_exame: 1,
+            numero_procedimento: 1,
             erro: null,
             sucesso: null,
 
@@ -136,35 +137,20 @@ export default {
             lista: false,
             paciente: [],
 
+            procedimento: [],
+            procedimento_descricao: [],
+
             nome: null,
 
             doc_identificacao: null,
 
 
-            //dadso da triagem//
-            temperatura: null,
-            peso: null,
-            presao_arterial: null,
-            //dadso da consulta 
-            date: null,
-            local_exame: null,
-            descricao_sintoma: null,
-            diagnostico: null,
-            /// dados exame
-            exame: [],
-            lista_de_exame: [],
-            lista_exame: {},
-            receita: null,
 
-
-            sexo: null,
-            numero: null
 
         }
     }, created() {
         this.redirecionar();
         this.listar();
-        this.medicos();
     },
     methods: {
 
@@ -173,98 +159,6 @@ export default {
             if (this.$route.params.bi === 'undefined') {
                 this.$router.push({ path: '/listarPacinte' })
             }
-        },
-        onFile(e) {
-            const files = e.target.files
-            if (!files.length) return
-
-            this.imagem.push(files[0]);
-
-            const reader = new FileReader()
-            reader.readAsDataURL(files[0])
-            reader.onload = () => (this.imgSrc = reader.result)
-        },
-
-
-        file(id_consulta, bi_paciente) {
-
-            var i = 0;
-
-            this.imagem.forEach(element => {
-                let formData = new FormData();
-                formData.append('sendimage', element);
-
-                const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
-
-                axios.post('http://localhost/historico_mais/api/arquivo', formData, {
-                    headers: {
-
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-                    .then(async (res) => {
-
-                        this.mostrar = res.data.message
-
-
-                        this.lista_exame = {
-                            nome: this.exame[i],
-                            url: res.data.message
-                        }
-
-
-
-                        this.lista_de_exame.push({
-                            nome: this.exame[i],
-                            url: res.data.message
-                        })
-
-                        let dados = {
-
-                            BI: bi_paciente,
-                            dados: {
-                                consulta_id: id_consulta,
-                                nome: this.exame[i],
-                                url: res.data.message
-                            }
-
-                        }
-
-                        axios.post('http://localhost/historico_mais/api/registar_exame', dados, {
-                            headers: {
-
-                                'Authorization': `Bearer ${token}`
-                            }
-                        }).then((resposta) => {
-
-                            console.log(resposta.data)
-                        })
-
-
-
-
-
-                        console.log(this.lista_exame)
-                        i++
-
-
-
-                    })
-                    .catch((error) => {
-                        console.error(error)
-                    })
-
-
-
-
-
-            });
-
-
-            this.zerarTudo()
-            this.exame_confirm = false
-
-
         },
 
         user: function (event) {
@@ -275,58 +169,42 @@ export default {
 
             var i = 0;
 
-            this.imagem.forEach(element => {
-                let formData = new FormData();
-                formData.append('sendimage', element);
-                // console.log(this.local)
+            this.procedimento.forEach(elemnto => {
 
                 const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
 
-                axios.post('http://localhost/historico_mais/api/arquivo', formData, {
+
+
+                let dados = {
+
+                    BI: this.doc_identificacao,
+                    dados: {
+                        local_procedimento: this.local,
+                        procedimento: elemnto,
+                        descricoao: this.procedimento_descricao[i]
+                    }
+
+                }
+                axios.post('http://localhost/historico_mais/api/registar_procedimento', dados, {
                     headers: {
 
                         'Authorization': `Bearer ${token}`
                     }
+                }).then((resposta) => {
+
+                    console.log(resposta.data)
                 })
-                    .then(async (res) => {
 
+                // console.log(`Porcedimento confirme ${elemnto} com as devidas descricao ${this.procedimento_descricao[i]} `)
 
-                        let dados = {
+                i++
 
-                            BI: this.doc_identificacao,
-                            dados: {
-                                local_exame: this.local,
-                                nome: this.exame[i],
-                                url: res.data.message
-                            }
-
-                        }
-
-                        console.log(this.local)
-
-                        axios.post('http://localhost/historico_mais/api/registar_exame', dados, {
-                            headers: {
-
-                                'Authorization': `Bearer ${token}`
-                            }
-                        }).then((resposta) => {
-
-                            console.log(resposta.data)
-                        })
-
-                        console.log(this.lista_exame)
-                        i++
-
-                    }).catch((error) => {
-                        console.error(error)
-                    })
-
-            });
+            })
 
             this.listar()
 
 
-           
+
             this.local_exame = ''
             this.medico = 'Medico'
             this.date = ''
@@ -350,6 +228,12 @@ export default {
         zerarTudo() {
             this.zerar()
             this.numero_exame = 1
+        },
+        zerar_procedimeno() {
+
+            this.procedimento.length = 0
+            this.procedimento_descricao.length = 0
+
         },
         listar() {
 
@@ -384,26 +268,6 @@ export default {
 
 
 
-        }, medicos() {
-            const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhZG1pbiIsImF1ZCI6IjEyMyJ9.NUChvtBBL_1gZBQPLB3kwPIEPbCn0U2vWyyUI6l03R8'
-
-            axios.get('http://localhost/historico_mais/api/listar_medico', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-                .then((res) => {
-                    // console.log(res.data)
-                    this.lista_medicos = res.data.data;
-
-                    this.lista_medicos.forEach(element => {
-                        //console.log(element.nome)
-                        this.options.push({ text: element.nome, value: element.numero_rodem ? element.numero_rodem : "" }) //<input type="submit" value="">
-                    });
-                })
-                .catch((error) => {
-                    console.error(error)
-                })
         }
 
     }

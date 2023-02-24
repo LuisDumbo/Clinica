@@ -29,8 +29,13 @@
                 <div class="form-group d-flex justify-content-center ">
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         <label class="btn btn-secondary active">
-                            <input type="radio" @click="consultas" name="options" id="option1" autocomplete="off"
-                                checked> Consultas
+                            <input type="radio" @click="consultas" name="options" id="option1" autocomplete="off" checked>
+                            Consultas
+                        </label>
+
+                        <label class="btn btn-secondary ">
+                            <input type="radio" @click="consultas" name="options" id="option2" autocomplete="off">
+                            Procedimentos
                         </label>
 
                         <label class="btn btn-secondary">
@@ -70,16 +75,46 @@
                     </div>
                 </div>
 
+                <div v-if="confirm_procedimento" class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h4 class="m-0 font-weight-bold text-dark text-center">Listar Porcedimentos Medicos</h4>
+
+
+                    </div>
+
+                    <div>
+                        <vue-good-table :columns="columns" :rows="rows" :line-numbers="true" :search-options="{
+                            enabled: true
+                        }" :pagination-options="{
+    enabled: true,
+    mode: 'records',
+    perPage: 3,
+}">
+                            <div slot="emptystate">
+                                Sem dados
+                            </div>
+
+
+                            <template slot="table-row" slot-scope="props">
+                                <span class="d-flex justify-content-center" v-if="props.column.field == 'actions'">
+                                    <router-link class="btn bg-success btn-sm text-center"
+                                        :to="{ name: 'historico_pacinte_consutla', params: { bi: doc_identificacao, id_consulta: props.row.id_consulta } }">Ver</router-link>
+                                </span>
+                            </template>
+
+                        </vue-good-table>
+                    </div>
+                </div>
+
                 <div v-if="confirm_exames" class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h4 class="m-0 font-weight-bold text-dark text-center">Listar Exame</h4>
                     </div>
 
                     <div>
-                        <vue-good-table :columns="columns_exame" :rows="rows_exame" :line-numbers="true"
-                            :search-options="{
-                                enabled: true
-                            }" :pagination-options="{
+                        <vue-good-table :columns="columns_exame" :rows="rows_exame" :line-numbers="true" :search-options="{
+                            enabled: true
+                        }" :pagination-options="{
     enabled: true,
     mode: 'records',
     perPage: 3,
@@ -90,8 +125,8 @@
                             <template slot="table-row" slot-scope="props">
                                 <span class="d-flex justify-content-center" v-if="props.column.field == 'actions'">
                                     <!--
-                                    <router-link class="btn bg-success btn-sm"
-                                        :to="{ name: 'consulta', params: { bi: props.row.bi } }">Ver</router-link> -->
+                                                    <router-link class="btn bg-success btn-sm"
+                                                        :to="{ name: 'consulta', params: { bi: props.row.bi } }">Ver</router-link> -->
 
 
                                     <img :src="props.row.url" @click="ver(props.row.url)" alt="" width="66" height="66"
@@ -111,8 +146,8 @@
                 </div>
             </form>
             <!-- Button trigger modal  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                Launch demo modal
-            </button> -->
+                                Launch demo modal
+                            </button> -->
 
 
             <!-- Modal -->
@@ -351,7 +386,5 @@ export default {
 }
 </script>
   
-<style>
-
-</style>
+<style></style>
   

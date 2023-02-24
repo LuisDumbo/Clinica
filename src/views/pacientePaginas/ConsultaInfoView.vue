@@ -1,7 +1,7 @@
 <template>
     <div class="historico_pacinte_consutla">
 
-       
+
 
         <div class="card-header py-3">
             <h4 class="m-0 font-weight-bold text-dark text-center">Informação da Consulta
@@ -58,16 +58,15 @@
                         <div class="form-group col-6">
                             <label>Peso</label>
                             <input type="number" disabled class="form-control" v-model="peso" name="peso"
-                                placeholder="Insira o Documento da Identificação" autocomplete="off"
-                                required="requiored">
+                                placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
 
                         </div>
 
                         <div class="form-group col-6">
                             <label>Preção Arterial</label>
                             <input type="number" disabled class="form-control" v-model="presao_arterial"
-                                name="presao_arterial" placeholder="Insira o Documento da Identificação"
-                                autocomplete="off" required="requiored">
+                                name="presao_arterial" placeholder="Insira o Documento da Identificação" autocomplete="off"
+                                required="requiored">
 
                         </div>
                     </div>
@@ -83,8 +82,7 @@
                 <div class="row">
                     <div class="form-group col-6">
                         <label for="data">Data Consulta</label>
-                        <input type="date" disabled v-model="date" name="data" id="data" required
-                            class="form-control" />
+                        <input type="date" disabled v-model="date" name="data" id="data" required class="form-control" />
                     </div>
                     <div class="form-group col-6">
                         <label>Local</label>
@@ -95,8 +93,8 @@
                 </div>
                 <div class="form-group ">
                     <label for="exampleFormControlTextarea1">Descrição Sintomas </label>
-                    <textarea disabled class="form-control" name="descricao_sintoma" v-model="descricao_sintoma"
-                        required id="exampleFormControlTextarea1" rows="3"></textarea>
+                    <textarea disabled class="form-control" name="descricao_sintoma" v-model="descricao_sintoma" required
+                        id="exampleFormControlTextarea1" rows="3"></textarea>
                 </div>
 
                 <div class="form-group ">
@@ -132,8 +130,8 @@
                                 </div>
                                 <template slot="table-row" slot-scope="props">
                                     <span class="d-flex justify-content-center" v-if="props.column.field == 'actions'">
-                                        <img :src="props.row.url" @click="ver(props.row.url)" alt="" width="66"
-                                            height="66" srcset="" data-toggle="modal" data-target="#exampleModal">
+                                        <img :src="props.row.url" @click="ver(props.row.url)" alt="" width="66" height="66"
+                                            srcset="" data-toggle="modal" data-target="#exampleModal">
 
                                     </span>
                                 </template>
@@ -143,6 +141,40 @@
 
 
                     <imagem_modal :url="img_modal" />
+
+                </div>
+
+                <div v-if="procedimento_confirm">
+
+
+                    <div class="row" id="linha-horizontal"> </div>
+
+                    <div class=" form-group col-6">
+
+                        <label for="checkbox_exame">Procedimento Medico</label>
+                    </div>
+
+                    <div class="card shadow mb-4">
+
+                        <div>
+                            <vue-good-table :columns="columns_procedimento" :rows="rows_procedimento" :line-numbers="true"
+                                :search-options="{
+                                    enabled: true
+                                }" :pagination-options="{
+    enabled: true,
+    mode: 'records',
+    perPage: 3,
+}">
+                                <div slot="emptystate">
+                                    Sem dados
+                                </div>
+
+                            </vue-good-table>
+                        </div>
+                    </div>
+
+
+
 
                 </div>
 
@@ -168,7 +200,6 @@
 
 
     </div>
-
 </template>
   
   
@@ -189,6 +220,7 @@ export default {
 
             triagem: null,
             exame_confirm: null,
+            procedimento_confirm: null, 
 
             medico: 'Medico',
 
@@ -214,6 +246,7 @@ export default {
             /// dados exame
             exame: [],
             lista_de_exame: [],
+            lista_procedimento: [],
             lista_exame: {},
             receita: null,
 
@@ -243,6 +276,22 @@ export default {
                 // { id: 1, name: "John", actions: 20, createdAt: '', score: 0.03343 },
             ],
 
+            columns_procedimento: [
+                {
+                    label: 'Procedimento',
+                    field: 'procedimento',
+                },
+                {
+                    label: 'Descrição Porcedimento',
+                    field: 'descricao',
+                    sortable: false,
+                    // html: true,
+                }
+            ],
+            rows_procedimento: [
+                // { id: 1, name: "John", actions: 20, createdAt: '', score: 0.03343 },
+            ],
+
 
 
         }
@@ -250,12 +299,12 @@ export default {
 
         this.redirecionar();
         this.listar();
-       
+
         this.consulta_info()
     },
     methods: {
         ver(url) {
-            
+
             this.img_modal = url
 
         },
@@ -277,7 +326,7 @@ export default {
                     BI: this.$route.params.bi
                 }
             }).then((res) => {
-              
+
 
 
                 this.medicos(res.data.data[0].numero_ordem)
@@ -301,14 +350,30 @@ export default {
                     this.exame_confirm = true
 
                     this.lista_de_exame.push(res.data.data[0].exame)
-                  
+
 
                     this.lista_de_exame.forEach(element => {
-                       
+
                         this.rows_exame.push({ nome: "" + element.nome ? element.nome : "" + "", url: "" + element.url ? element.url : "" + "" })
                     });
 
                 }
+                if (res.data.data[0].procedimento) {
+
+                     this.procedimento_confirm = true
+
+                    this.lista_procedimento.push(res.data.data[0].procedimento)
+
+
+                    this.lista_procedimento.forEach(element => {
+                        console.log(element);
+
+                         this.rows_procedimento.push({ procedimento: "" + element.procedimento ? element.procedimento : "" + "", descricao: "" + element.descricoao ? element.descricoao : "" + "" })
+                    });
+
+                }
+
+
 
             }).catch((error) => {
                 console.error(error)
