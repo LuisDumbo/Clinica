@@ -46,10 +46,17 @@
 
 
 
-                <div class="form-group">
-                    <label>Local</label>
-                    <input type="text" class="form-control" v-model="local" name="local_exame"
-                        placeholder="Local Do Procedimento" autocomplete="off" required="requiored">
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="data">Data Procedimento</label>
+                        <input type="date" v-model="date" name="data" id="data" required class="form-control" />
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Local</label>
+                        <input type="text" class="form-control" v-model="local" name="local_consulta"
+                            placeholder="Insira o Documento da Identificação" autocomplete="off" required="requiored">
+                    </div>
+
                 </div>
 
                 <div class=" form-group col-6">
@@ -118,6 +125,7 @@ export default {
         return {
 
             local: null,
+            date: null,
             numero_procedimento: 1,
             erro: null,
             sucesso: null,
@@ -180,6 +188,7 @@ export default {
                     BI: this.doc_identificacao,
                     dados: {
                         local_procedimento: this.local,
+                        data_procedimento: this.date,
                         procedimento: elemnto,
                         descricoao: this.procedimento_descricao[i]
                     }
@@ -205,7 +214,7 @@ export default {
 
 
 
-            this.local_exame = ''
+            this.local = ''
             this.medico = 'Medico'
             this.date = ''
             this.descricao_sintoma = ''
@@ -219,6 +228,7 @@ export default {
 
             event.target.reset();
             this.erro = null
+            this.zerar_procedimeno()
             this.sucesso = true
         },
         zerar() {
@@ -233,6 +243,7 @@ export default {
 
             this.procedimento.length = 0
             this.procedimento_descricao.length = 0
+            this.numero_procedimento = 1
 
         },
         listar() {

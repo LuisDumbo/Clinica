@@ -34,7 +34,7 @@
                         </label>
 
                         <label class="btn btn-secondary ">
-                            <input type="radio" @click="consultas" name="options" id="option2" autocomplete="off">
+                            <input type="radio" @click="procedimento" name="options" id="option2" autocomplete="off">
                             Procedimentos
                         </label>
 
@@ -83,9 +83,10 @@
                     </div>
 
                     <div>
-                        <vue-good-table :columns="columns" :rows="rows" :line-numbers="true" :search-options="{
-                            enabled: true
-                        }" :pagination-options="{
+                        <vue-good-table :columns="columns_procedimento" :rows="rows_procedimento" :line-numbers="true"
+                            :search-options="{
+                                enabled: true
+                            }" :pagination-options="{
     enabled: true,
     mode: 'records',
     perPage: 3,
@@ -98,7 +99,7 @@
                             <template slot="table-row" slot-scope="props">
                                 <span class="d-flex justify-content-center" v-if="props.column.field == 'actions'">
                                     <router-link class="btn bg-success btn-sm text-center"
-                                        :to="{ name: 'historico_pacinte_consutla', params: { bi: doc_identificacao, id_consulta: props.row.id_consulta } }">Ver</router-link>
+                                        :to="{ name: 'historico_pacinte_consutla', params: { bi: doc_identificacao, id_consulta: props.row.id_procedimento } }">Ver</router-link>
                                 </span>
                             </template>
 
@@ -178,6 +179,7 @@ export default {
 
             confirm_consulta: true,
             confirm_exames: null,
+            confirm_procedimento: null,
             img_nem: null,
 
 
@@ -210,6 +212,45 @@ export default {
 
             ],
             rows: [
+                // { id: 1, name: "John", actions: 20, createdAt: '', score: 0.03343 },
+            ],
+
+            columns_procedimento: [
+                {
+                    label: 'Procedimento',
+                    field: 'procedimento',
+                },
+                {
+                    label: 'Local Procedimento',
+                    field: 'local_procedimento',
+                }
+                ,
+                {
+                    label: 'Data',
+                    field: 'date',
+                    sortable: false,
+                    // html: true,
+                },
+                {
+                    label: 'Descrição',
+                    field: 'descricoao',
+                }
+                ,
+                {
+                    label: 'Procedimento',
+                    field: 'actions',
+                    sortable: false,
+                    // html: true,
+                }
+                ,
+                {
+                    label: 'Id_procedimento',
+                    field: 'id_procedimento',
+                    hidden: true,
+                }
+
+            ],
+            rows_procedimento: [
                 // { id: 1, name: "John", actions: 20, createdAt: '', score: 0.03343 },
             ],
 
@@ -247,6 +288,7 @@ export default {
 
             lista_consulta: null,
             lista_exame: null,
+            lista_procedimento: null,
 
 
 
@@ -286,12 +328,19 @@ export default {
             console.log("exame")
 
             this.confirm_consulta = false
+            this.confirm_procedimento=false
             this.confirm_exames = true
         },
         consultas() {
             console.log("consulta ")
             this.confirm_exames = false
+            this.confirm_procedimento=false
             this.confirm_consulta = true
+        }, procedimento() {
+            this.confirm_consulta = false
+            this.confirm_exames = false
+            this.confirm_procedimento = true
+
         },
 
         historico() {
@@ -312,6 +361,32 @@ export default {
                 this.lista_consulta.forEach(element => {
                     console.log(element.diagnostico)
                     this.rows.push({ diagnostico: "" + element.diagnostico ? element.diagnostico : "" + "", date: "" + element.data_consulta ? element.data_consulta : "" + "", local: "" + element.local_consulta ? element.local_consulta : "" + "", id_consulta: "" + element.id_consulta ? element.id_consulta : "" + "" /*, sexo: "" + element.sexo ? element.sexo : "" + "", actions: '' */ }) //<input type="submit" value="">
+                });
+
+
+
+            }).catch((error) => {
+                console.error(error)
+            })
+
+            axios.get('http://localhost/historico_mais/api/listar_procedimento?bi=' + this.$route.params.bi + '', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }, params: {
+                    BI: this.$route.params.bi
+                }
+            }).then((res) => {
+
+                this.lista_procedimento = res.data.data;
+
+                // console.log(res.data)
+
+
+                // this.lista_consulta = res.data.data;
+
+                this.lista_procedimento.forEach(element => {
+                   // console.log(element.diagnostico)
+                    this.rows_procedimento.push({ procedimento: "" + element.procedimento ? element.procedimento : "" + "", local_procedimento: "" + element.local_procedimento ? element.local_procedimento : "" + "", date: "" + element.data_procedimento ? element.data_procedimento : "" + "", descricoao: "" + element.descricoao ? element.descricoao : "" + "", id_procedimento: "" + element.id_procedimento ? element.id_procedimento : "" + "" }) //<input type="submit" value="">
                 });
 
 
