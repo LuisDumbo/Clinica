@@ -1,4 +1,4 @@
-# clinica d
+# clinica
 
 ## Project setup
 ```
