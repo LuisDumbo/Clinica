@@ -4,11 +4,20 @@ name:  Context Exempo
 on: ['push']
 
 jobs:
-  my-context:
+
+  job1:
+    needs: job2
     runs-on: ubuntu-latest
-    env:
-      MY_ACTION: ${{github.action}}
     steps:
-      - name: "My Step"
-        run: echo "Hello ! ${{github.action}}"
+      - name: Step 1
+        run: echo "This is step 1"
+
+      - name: Step 2
+        run: echo "This is step 2"
+  
+  job2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1
+        run: echo "This is step 1 of job 2"
   
