@@ -6,7 +6,7 @@ on: ['push']
 jobs:
 
   job1:
-    needs: job2
+    #3needs: job2
     runs-on: ubuntu-latest
     steps:
       - name: Step 1
